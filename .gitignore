@@ -1,0 +1,11 @@
+# Local fund CSVs and generated reports live outside this repo (see README).
+funds/
+output/
+reports/
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
