@@ -1,12 +1,15 @@
 # Build traction reports from RupeeVest and publish HTML to GitHub Pages.
 #
-# Setup (once) — use the gh-pages branch (reliable):
+# History: prior month JSON/insights live under gh-pages/data/. Each run restores
+# them, screens the target month, rebuilds multi-month traction.html, and redeploys
+# HTML + data/ so April/May/… accumulate over time.
+#
+# Setup (once):
 #   Repo Settings → Pages → Build and deployment
 #     Source: Deploy from a branch
 #     Branch: gh-pages / (root)
 #
 # Manual run: Actions → "Monthly traction report" → Run workflow
-#   Toggle "Deploy HTML to GitHub Pages" (on by default). Scheduled runs always deploy.
 # Optional secret: GEMINI_API_KEY (omit for rules-only insights)
 
 name: Monthly traction report
@@ -30,7 +33,7 @@ on:
         type: boolean
         default: true
       deploy_pages:
-        description: "Deploy HTML to GitHub Pages (gh-pages branch)"
+        description: "Deploy HTML + data/ history to gh-pages"
         type: boolean
         default: true
 
@@ -51,6 +54,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Fetch prior gh-pages (history)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: prev-site
+
+      - name: Restore historical JSON into output/
+        run: |
+          mkdir -p output/json
+          if [ -d prev-site/data ]; then
+            echo "Restoring from gh-pages/data/:"
+            ls -la prev-site/data
+            for f in prev-site/data/*; do
+              [ -f "$f" ] || continue
+              base=$(basename "$f")
+              if [ "$base" = "watchlist.json" ]; then
+                cp "$f" output/watchlist.json
+                echo "restored watchlist.json"
+              else
+                cp "$f" "output/json/$base"
+                echo "restored json/$base"
+              fi
+            done
+          else
+            echo "No prior gh-pages/data yet (first publish or empty branch)."
+          fi
+          echo "output/json after restore:"
+          ls -la output/json || true
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -68,7 +101,6 @@ jobs:
           if [ -n "${INPUT_MONTH}" ]; then
             SLUG=$(echo "${INPUT_MONTH}" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
           else
-            # MF disclosures lag: default to previous calendar month (UTC)
             SLUG=$(python3 -c "
           import datetime
           today = datetime.datetime.now(datetime.timezone.utc).date()
@@ -111,28 +143,34 @@ jobs:
           fi
           python3 -m mf_screener.month_run "${ARGS[@]}"
 
-      - name: Prepare Pages site
+      - name: Rebuild combined HTML from all months
         run: |
-          mkdir -p _site
+          echo "Months available for combined UI:"
+          ls -la output/json/*_traction.json || true
+          python3 scripts/embed_report_ui.py output
+
+      - name: Prepare Pages site (HTML + data history)
+        run: |
+          mkdir -p _site/data
           if [ -f output/html/traction.html ]; then
             cp -R output/html/. _site/
             cp output/html/traction.html _site/index.html
           else
-            shopt -s nullglob
-            months=(output/html/*_traction.html)
-            if [ ${#months[@]} -eq 0 ]; then
-              echo "No HTML reports under output/html/" >&2
-              ls -la output/html/ || true
-              exit 1
-            fi
-            cp "${months[@]}" _site/
-            cp "${months[-1]}" _site/index.html
-            echo "WARN: output/html/traction.html missing; using ${months[-1]} as index.html" >&2
+            echo "Missing output/html/traction.html" >&2
+            exit 1
+          fi
+          # Persist machine-readable history for the next run
+          cp output/json/*_traction.json _site/data/ 2>/dev/null || true
+          cp output/json/*_insights.json _site/data/ 2>/dev/null || true
+          if [ -f output/watchlist.json ]; then
+            cp output/watchlist.json _site/data/watchlist.json
           fi
           touch _site/.nojekyll
           test -s _site/index.html
-          echo "Pages root contents:"
+          echo "Pages root:"
           ls -la _site
+          echo "Pages data/:"
+          ls -la _site/data
           echo "index.html bytes: $(wc -c < _site/index.html)"
 
       - name: Upload report bundle (optional download)

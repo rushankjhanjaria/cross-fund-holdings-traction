@@ -109,7 +109,12 @@ Entry points: `mf-screener` (screen) and `mf-screener-month` (full month pipelin
 
 Workflow: [`.github/workflows/monthly-report.yml`](.github/workflows/monthly-report.yml)
 
-Automates **RupeeVest ingest → `month_run` → HTML**, then publishes `_site/` (with `index.html` = `traction.html`) to the **`gh-pages`** branch.
+Automates **RupeeVest ingest → `month_run` → multi-month HTML**, then publishes to **`gh-pages`**:
+
+- Site root: `index.html` (= combined `traction.html`)
+- History: `data/*_traction.json`, `data/*_insights.json`, `data/watchlist.json`
+
+Each run **restores** prior `data/` from `gh-pages`, screens the target month, rebuilds the combined UI from **all** months, and redeploys. Months accumulate (April + May + June + …) without a database.
 
 ### One-time setup
 
@@ -119,6 +124,7 @@ Automates **RupeeVest ingest → `month_run` → HTML**, then publishes `_site/`
    - Do **not** use `/docs` on `main` (that folder is for markdown notes only and has no `index.html`).
 2. **Visibility:** Pages is free for **public** repos. Private repos need GitHub Pro/Team (or make the repo public).
 3. **Optional Gemini:** **Settings → Secrets and variables → Actions** → add `GEMINI_API_KEY`. Omit for rules-only insights.
+4. **Seed history (optional):** Run the workflow once per past month (`month=april`, then `may`, then `june`, …). Each run keeps prior JSON and adds the new month.
 
 ### Run it
 
