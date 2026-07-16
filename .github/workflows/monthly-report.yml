@@ -111,14 +111,35 @@ jobs:
           fi
           python3 -m mf_screener.month_run "${ARGS[@]}"
 
+      - name: Setup Pages
+        if: github.event_name == 'schedule' || inputs.deploy_pages == true
+        uses: actions/configure-pages@v5
+
       - name: Prepare Pages site
         run: |
-          test -f output/html/traction.html
           mkdir -p _site
-          cp -R output/html/. _site/
-          cp _site/traction.html _site/index.html
+          if [ -f output/html/traction.html ]; then
+            cp -R output/html/. _site/
+            cp output/html/traction.html _site/index.html
+          else
+            # Combined report missing (e.g. insights failed) — still publish month HTML
+            shopt -s nullglob
+            months=(output/html/*_traction.html)
+            if [ ${#months[@]} -eq 0 ]; then
+              echo "No HTML reports under output/html/" >&2
+              ls -la output/html/ || true
+              exit 1
+            fi
+            cp "${months[@]}" _site/
+            # Prefer newest-looking slug alphabetically last as index; override with traction if present
+            cp "${months[-1]}" _site/index.html
+            echo "WARN: output/html/traction.html missing; using ${months[-1]} as index.html" >&2
+          fi
           touch _site/.nojekyll
+          test -s _site/index.html
+          echo "Pages root contents:"
           ls -la _site
+          echo "index.html bytes: $(wc -c < _site/index.html)"
 
       - name: Upload Pages artifact
         if: github.event_name == 'schedule' || inputs.deploy_pages == true
