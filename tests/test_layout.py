@@ -30,6 +30,18 @@ def test_from_any_path_resolves_layout_subdir(tmp_path: Path) -> None:
     assert ReportsLayout.from_any_path(layout.json_dir).root == tmp_path.resolve()
 
 
+def test_from_any_path_before_file_exists(tmp_path: Path) -> None:
+    """Regression: GHA wrote into …/july_traction.json/json/ when path was missing."""
+    layout = ReportsLayout(root=tmp_path)
+    layout.ensure()
+    missing = tmp_path / "json" / "july_traction.json"
+    assert not missing.exists()
+    assert ReportsLayout.from_any_path(missing).root == tmp_path.resolve()
+    paths = ReportsLayout.from_any_path(missing).for_slug("july")
+    assert paths.traction_json == missing
+    assert paths.traction_csv == tmp_path / "csv" / "july_traction.csv"
+
+
 def test_migrate_flat_output(tmp_path: Path) -> None:
     (tmp_path / "april_traction.json").write_text("{}", encoding="utf-8")
     (tmp_path / "april_insights.json").write_text("{}", encoding="utf-8")

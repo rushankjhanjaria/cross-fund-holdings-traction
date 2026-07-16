@@ -125,12 +125,12 @@ Automates **RupeeVest ingest → `month_run` → HTML**. Fund CSVs and reports s
 
 | Input | Default | Meaning |
 |-------|---------|---------|
-| `month` | *(current UTC month)* | Folder slug, e.g. `june` |
+| `month` | *(previous UTC month)* | Folder slug, e.g. `june`. Empty → prior month (disclosure lag). |
 | `overwrite_funds` | on | Re-download CSVs from RupeeVest |
 | `refresh_prices` | on | Refresh yfinance prices |
 | **Deploy HTML to GitHub Pages** | **on** | Publish `output/html/` to Pages |
 
-4. Leave **Deploy HTML to GitHub Pages** checked to update the live site. Uncheck to build only (download the `traction-reports-*` artifact from the run).
+4. Leave **Deploy HTML to GitHub Pages** checked to update the live site. Uncheck to build only (download the `traction-reports-*` artifact from the run). For a known month, set **month** explicitly (e.g. `june`) so the folder/slug match your CSVs.
 
 **Schedule:** `03:00 UTC` on the **5th** of each month (always deploys). Cron only runs from the default branch (`main`).
 

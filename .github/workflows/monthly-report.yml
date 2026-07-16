@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       month:
-        description: "Month folder slug (e.g. june). Leave empty for current UTC month."
+        description: "Month folder slug (e.g. june). Leave empty for previous UTC month (disclosure lag)."
         required: false
         default: ""
       overwrite_funds:
@@ -67,7 +67,14 @@ jobs:
           if [ -n "${INPUT_MONTH}" ]; then
             SLUG=$(echo "${INPUT_MONTH}" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
           else
-            SLUG=$(python3 -c "import datetime; print(datetime.datetime.now(datetime.timezone.utc).strftime('%B').lower())")
+            # MF disclosures lag: default to previous calendar month (UTC)
+            SLUG=$(python3 -c "
+          import datetime
+          today = datetime.datetime.now(datetime.timezone.utc).date()
+          first = today.replace(day=1)
+          prev = first - datetime.timedelta(days=1)
+          print(prev.strftime('%B').lower())
+          ")
           fi
           echo "slug=${SLUG}" >> "$GITHUB_OUTPUT"
           echo "Using month slug: ${SLUG}"

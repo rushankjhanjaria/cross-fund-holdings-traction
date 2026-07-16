@@ -50,16 +50,23 @@ class ReportsLayout:
 
     @classmethod
     def from_any_path(cls, path: Path) -> ReportsLayout:
-        """Infer reports root from a file or directory path."""
+        """Infer reports root from a file or directory path.
+
+        File-like paths (existing files or paths with a suffix such as
+        ``…/json/july_traction.json``) resolve to the reports root even when
+        the file has not been written yet.
+        """
         path = path.resolve()
-        if path.is_file():
-            parent = path.parent
-            if parent.name in LAYOUT_DIR_NAMES:
-                return cls(root=parent.parent)
-            return cls(root=parent)
         if path.name in LAYOUT_DIR_NAMES:
             return cls(root=path.parent)
-        return cls(root=path)
+        parent = path.parent
+        if parent.name in LAYOUT_DIR_NAMES:
+            return cls(root=parent.parent)
+        # Existing directory, or path with no suffix → treat as reports root
+        if path.is_dir() or not path.suffix:
+            return cls(root=path)
+        # File-like path (may not exist yet)
+        return cls(root=parent)
 
     def ensure(self) -> None:
         self.root.mkdir(parents=True, exist_ok=True)
