@@ -2,6 +2,8 @@
 
 **Personal project** for a practical day-to-day workflow: scan **recent mutual fund portfolio activity** across many schemes, **spot names where institutions are moving together (or disagreeing)**, and check whether price has already run vs a **month-end 30d SMA**—not as a buy/sell signal, but as a sanity check against chasing after funds have built positions.
 
+The screener reports are hosted here: https://rushankjhanjaria.github.io/cross-fund-holdings-traction/
+
 In practice it helps you:
 
 - **Prioritize reading** — rank stocks by cross-fund share/weight changes and continued ownership instead of opening dozens of factsheets.
