@@ -35,20 +35,28 @@ Use a separate directory on your machine (example: `~/mf-data`):
 
 ```text
 ~/mf-data/
-  funds/
-    june/                          # one CSV per fund (ingested)
+  funds/                           # source fund CSVs (one folder per month)
+    june/
       helios_small_cap_06_26.csv
       ...
-  reports/
-    june_traction.json
-    june_traction.csv
-    june_traction.html
-    june_insights.json
-    traction.html                  # combined multi-month UI
+  reports/                         # generated artifacts (typed subfolders)
+    json/
+      june_traction.json
+      june_insights.json
+    csv/
+      june_traction.csv
+    html/
+      june_traction.html
+      traction.html                # combined multi-month UI
+    backtests/
+      june_top100_backtest.json
+      june_top100_backtest_summary.json
     watchlist.json
     cache/
       prices_2026-06.json
 ```
+
+Local repo runs use the same layout under `output/` (`output/json/`, `output/html/`, …). Source fund CSVs stay in `funds/`.
 
 The JSON/HTML `meta.folder` field records the **absolute path** to the fund folder used for that run.
 
@@ -68,6 +76,8 @@ python3 scripts/download_rupeevest_funds.py \
   --delay 1.0 \
   --overwrite
 ```
+
+Existing CSVs in ``--out-dir`` are skipped unless ``--overwrite`` is set (no unnecessary tracker calls).
 
 **CSV formats**
 
@@ -95,6 +105,39 @@ Entry points: `mf-screener` (screen) and `mf-screener-month` (full month pipelin
 
 ---
 
+## GitHub Actions → GitHub Pages
+
+Workflow: [`.github/workflows/monthly-report.yml`](.github/workflows/monthly-report.yml)
+
+Automates **RupeeVest ingest → `month_run` → HTML**. Fund CSVs and reports stay off git; the run uploads Actions artifacts and can publish the site.
+
+### One-time setup
+
+1. **Pages:** Repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. **Visibility:** Pages is free for **public** repos. Private repos need GitHub Pro/Team (or make the repo public).
+3. **Optional Gemini:** **Settings → Secrets and variables → Actions** → add `GEMINI_API_KEY`. Omit for rules-only insights.
+
+### Run it
+
+1. **Actions → Monthly traction report → Run workflow**
+2. Choose the branch (feature branch is fine for a first test; merge to `main` for the monthly schedule).
+3. Inputs:
+
+| Input | Default | Meaning |
+|-------|---------|---------|
+| `month` | *(current UTC month)* | Folder slug, e.g. `june` |
+| `overwrite_funds` | on | Re-download CSVs from RupeeVest |
+| `refresh_prices` | on | Refresh yfinance prices |
+| **Deploy HTML to GitHub Pages** | **on** | Publish `output/html/` to Pages |
+
+4. Leave **Deploy HTML to GitHub Pages** checked to update the live site. Uncheck to build only (download the `traction-reports-*` artifact from the run).
+
+**Schedule:** `03:00 UTC` on the **5th** of each month (always deploys). Cron only runs from the default branch (`main`).
+
+**Site URL:** `https://<user>.github.io/<repo>/` (`traction.html` is also served as `index.html`).
+
+---
+
 ## Recommended: one-shot month pipeline
 
 Builds scores, enriches prices, writes JSON/CSV/HTML, generates insights, and refreshes combined `traction.html`:
@@ -116,14 +159,14 @@ Omit `--refresh-prices` to reuse the price cache. Use `--no-gemini` for rules-on
 python -m mf_screener \
   --folder ~/mf-data/funds/june \
   --enrich-prices \
-  --out ~/mf-data/reports/june_traction.json \
+  --out ~/mf-data/reports/json/june_traction.json \
   --top 50
 ```
 
-`--out` also writes **CSV** and **HTML** next to the JSON and refreshes combined `traction.html` in the same reports directory.
+`--out` also writes **CSV** under `csv/` and **HTML** under `html/`, and refreshes combined `html/traction.html` in the same reports root (a flat `…/june_traction.json` path is accepted and remapped into this layout).
 
 ```bash
-open ~/mf-data/reports/traction.html
+open ~/mf-data/reports/html/traction.html
 ```
 
 ### Report rules
@@ -146,7 +189,7 @@ Sort by traction score (default) or **Most funds**. Cards show **30d SMA** and *
 
 ### Persistence & watchlist
 
-Two or more `*_traction.json` files in the same reports dir enable MoM badges. Combined HTML auto-merges a watchlist (manual pins preserved).
+Two or more `json/*_traction.json` files under the same reports root enable MoM badges. Combined HTML auto-merges a watchlist (manual pins preserved).
 
 ```bash
 python3 scripts/manage_watchlist.py --reports-dir ~/mf-data/reports list
@@ -157,9 +200,9 @@ python3 scripts/manage_watchlist.py --reports-dir ~/mf-data/reports list
 Monthly **triage** from report fields only: **Top traction** shortlist plus narrative cards (**still early** = multi-fund adds while price ≤ ~5% vs SMA, **exit pressure**, **debate**, **watchlist deltas**). Rules-only works offline; Gemini is optional.
 
 ```bash
-python3 -m mf_screener.insights --report ~/mf-data/reports/june_traction.json --no-gemini
+python3 -m mf_screener.insights --report ~/mf-data/reports/json/june_traction.json --no-gemini
 # optional rebuild if you ran insights outside month_run:
-python3 scripts/embed_report_ui.py ~/mf-data/reports ~/mf-data/reports/traction.html
+python3 scripts/embed_report_ui.py ~/mf-data/reports
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for module layout.
@@ -196,12 +239,12 @@ Cache: `{reports}/cache/prices_YYYY-MM.json` (or repo `output/cache/` when using
 ## Top-100 backtest
 
 ```bash
-PYTHONPATH=src python3 scripts/top100_backtest.py --report ~/mf-data/reports/june_traction.json
+PYTHONPATH=src python3 scripts/top100_backtest.py --report ~/mf-data/reports/json/june_traction.json
 ```
 
 - **Buy** = last trading-day Close of the disclosure month  
 - **Exit** = latest Close in the Yahoo history  
-- Writes `{month}_top100_backtest.json` + `_summary.json`
+- Writes `backtests/{month}_top100_backtest.json` + `_summary.json`
 
 Results for Apr–Jun 2026: [`docs/backtest-apr-may-june-2026.md`](docs/backtest-apr-may-june-2026.md).
 

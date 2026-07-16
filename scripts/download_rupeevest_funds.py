@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,6 +86,12 @@ def main(argv: list[str] | None = None) -> int:
 
     print("Loading RupeeVest fund index…", file=sys.stderr)
     index = load_search_index()
+    if index.collisions:
+        print(
+            f"Note: {len(index.collisions)} duplicate fund name(s) in search index "
+            "(kept first schemecode)",
+            file=sys.stderr,
+        )
 
     if args.dry_run:
         for query in names:
@@ -98,13 +105,13 @@ def main(argv: list[str] | None = None) -> int:
     ok = 0
     fail = 0
     for i, query in enumerate(names):
-        delay = args.delay if i > 0 else 0.0
+        if i > 0 and args.delay > 0:
+            time.sleep(args.delay)
         result = download_fund_csv(
             fund_query=query,
             out_dir=args.out_dir,
             index=index,
             overwrite=args.overwrite,
-            delay_seconds=delay,
         )
         if result.error:
             print(f"FAIL {query!r}: {result.error}", file=sys.stderr)

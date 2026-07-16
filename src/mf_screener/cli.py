@@ -35,7 +35,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--out",
         type=Path,
         default=None,
-        help="Write JSON report to this path",
+        help="Write JSON report path or filename under reports root (also writes csv/ + html/)",
     )
     parser.add_argument(
         "--csv",
@@ -53,7 +53,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--combined-html",
         type=Path,
         default=None,
-        help="Multi-month HTML from all output/*_traction.json (default: output/traction.html)",
+        help="Multi-month HTML from reports html/traction.html (default under reports root)",
     )
     parser.add_argument(
         "--top",

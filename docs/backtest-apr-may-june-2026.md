@@ -32,9 +32,10 @@ June’s smaller absolute move is expected (shorter hold from month-end to refre
 
 ## Artifacts
 
-- `output/{month}_traction.json` / `.html` / `_insights.json`
-- `output/{month}_top100_backtest.json` + `_summary.json`
-- Combined UI: `output/traction.html`
+- `output/json/{month}_traction.json` + `{month}_insights.json`
+- `output/csv/{month}_traction.csv`
+- `output/html/{month}_traction.html` + `traction.html` (combined)
+- `output/backtests/{month}_top100_backtest.json` + `_summary.json`
 - Interactive canvas (local IDE): `apr-may-june-backtest.canvas.tsx`
 
 ## Score formula (current defaults)

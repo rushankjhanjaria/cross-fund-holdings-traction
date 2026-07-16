@@ -1,0 +1,143 @@
+# Build traction reports from RupeeVest and publish HTML to GitHub Pages.
+#
+# Setup (once):
+#   Repo Settings → Pages → Build and deployment → Source: GitHub Actions
+# Public repos: Pages is free. Private repos need GitHub Pro/Team for Pages.
+#
+# Manual run: Actions → "Monthly traction report" → Run workflow
+#   Toggle "Deploy HTML to GitHub Pages" (on by default). Scheduled runs always deploy.
+# Optional secret: GEMINI_API_KEY (omit for rules-only insights)
+
+name: Monthly traction report
+
+on:
+  schedule:
+    # 03:00 UTC on the 5th — after typical month-end disclosure lag
+    - cron: "0 3 5 * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Month folder slug (e.g. june). Leave empty for current UTC month."
+        required: false
+        default: ""
+      overwrite_funds:
+        description: "Re-download fund CSVs even if they already exist in the runner workspace"
+        type: boolean
+        default: true
+      refresh_prices:
+        description: "Ignore yfinance price cache and refresh"
+        type: boolean
+        default: true
+      deploy_pages:
+        description: "Deploy HTML to GitHub Pages"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-traction
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Resolve month slug
+        id: month
+        env:
+          INPUT_MONTH: ${{ inputs.month }}
+        run: |
+          if [ -n "${INPUT_MONTH}" ]; then
+            SLUG=$(echo "${INPUT_MONTH}" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+          else
+            SLUG=$(python3 -c "import datetime; print(datetime.datetime.now(datetime.timezone.utc).strftime('%B').lower())")
+          fi
+          echo "slug=${SLUG}" >> "$GITHUB_OUTPUT"
+          echo "Using month slug: ${SLUG}"
+
+      - name: Ingest fund CSVs from RupeeVest
+        env:
+          OVERWRITE: ${{ inputs.overwrite_funds }}
+        run: |
+          ARGS=(
+            --funds-file config/rupeevest_funds.example.txt
+            --out-dir "funds/${{ steps.month.outputs.slug }}"
+            --delay 1.0
+          )
+          # schedule has no inputs → default to overwrite so each monthly run is fresh
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${OVERWRITE}" = "true" ]; then
+            ARGS+=(--overwrite)
+          fi
+          python3 scripts/download_rupeevest_funds.py "${ARGS[@]}"
+
+      - name: Run month pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REFRESH: ${{ inputs.refresh_prices }}
+        run: |
+          ARGS=(
+            --folder "funds/${{ steps.month.outputs.slug }}"
+            --out-dir output
+          )
+          if [ -z "${GEMINI_API_KEY}" ]; then
+            ARGS+=(--no-gemini)
+          fi
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${REFRESH}" = "true" ]; then
+            ARGS+=(--refresh-prices)
+          fi
+          python3 -m mf_screener.month_run "${ARGS[@]}"
+
+      - name: Prepare Pages site
+        run: |
+          test -f output/html/traction.html
+          mkdir -p _site
+          cp -R output/html/. _site/
+          cp _site/traction.html _site/index.html
+          touch _site/.nojekyll
+          ls -la _site
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'schedule' || inputs.deploy_pages == true
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Upload report bundle (optional download)
+        uses: actions/upload-artifact@v4
+        with:
+          name: traction-reports-${{ steps.month.outputs.slug }}
+          path: |
+            output/html
+            output/json
+            output/csv
+          if-no-files-found: warn
+          retention-days: 30
+
+  deploy:
+    if: github.event_name == 'schedule' || inputs.deploy_pages == true
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

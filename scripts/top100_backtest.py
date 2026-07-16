@@ -6,7 +6,7 @@ disclosure). SMA is shown in the traction UI for context, not used as the
 backtest entry.
 
 Usage:
-  PYTHONPATH=src python3 scripts/top100_backtest.py --report output/may_traction.json
+  PYTHONPATH=src python3 scripts/top100_backtest.py --report output/json/may_traction.json
 """
 
 from __future__ import annotations
@@ -25,6 +25,10 @@ from typing import Any
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
+
+from mf_screener.reporting.layout import ReportsLayout  # noqa: E402
+
 DEFAULT_CACHE = REPO / "output" / "cache" / "yf_backtest"
 
 
@@ -391,10 +395,14 @@ def run_backtest(
     mi = int(month.split("-")[1]) - 1
     slug = month_names[mi]
 
-    out_path = out_path or (REPO / "output" / f"{slug}_top100_backtest.json")
-    summary_path = summary_path or (REPO / "output" / f"{slug}_top100_backtest_summary.json")
+    layout = ReportsLayout.from_any_path(report_path)
+    layout.ensure()
+    out_path = out_path or layout.for_slug(slug).backtest_json
+    summary_path = summary_path or layout.for_slug(slug).backtest_summary
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(doc, indent=2), encoding="utf-8")
-    summary_path.write_text(json.dumps(slim), encoding="utf-8")
+    summary_path.write_text(json.dumps(slim, indent=2), encoding="utf-8")
     print(f"Wrote {out_path}", file=sys.stderr)
     print(f"Wrote {summary_path}", file=sys.stderr)
     print(json.dumps({"price_month": month, **summary, "pearson": slim["pearson_corr_score_return"]}, indent=2))
