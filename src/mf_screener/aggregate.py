@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import statistics
 from dataclasses import dataclass, field
 from typing import Literal
@@ -42,10 +43,19 @@ class StockAggregate:
     new_entry_count: int
     fund_count: int
     funds: list[FundContribution] = field(default_factory=list)
+    breadth_exit: int = 0
+    breadth_hold: int = 0
 
 
-DEFAULT_WEIGHT_SCALE = 10.0
-DEFAULT_NEW_BOOST = 50.0
+# Structural priors (not fitted to one or two months). Keep hold bonus
+# well below active breadth so continued ownership matters without
+# drowning out real adds / weight conviction.
+DEFAULT_WEIGHT_SCALE = 15.0
+DEFAULT_NEW_BOOST = 5.0
+DEFAULT_BREADTH_BONUS = 5.0
+DEFAULT_SHARE_WEIGHT = 0.5
+DEFAULT_EXIT_PENALTY = 20.0
+DEFAULT_HOLD_BONUS = 1.0
 
 
 def _median(values: list[float]) -> float | None:
@@ -79,19 +89,45 @@ def composite_score(
     breadth_weight_up: int,
     median_weight: float | None,
     new_entry_count: int,
+    breadth_exit: int = 0,
+    breadth_hold: int = 0,
     *,
     weight_scale: float = DEFAULT_WEIGHT_SCALE,
     new_boost: float = DEFAULT_NEW_BOOST,
+    breadth_bonus: float = DEFAULT_BREADTH_BONUS,
+    share_weight: float = DEFAULT_SHARE_WEIGHT,
+    exit_penalty: float = DEFAULT_EXIT_PENALTY,
+    hold_bonus: float = DEFAULT_HOLD_BONUS,
 ) -> float:
+    """Composite traction score.
+
+    ``breadth_active * breadth_bonus``
+    + ``breadth_active * log1p(median_share) * share_weight`` (positive share only)
+    + ``breadth_weight_up * median_weight * weight_scale``
+    + ``new_entry_count * new_boost``
+    + ``breadth_hold * hold_bonus``
+    - ``breadth_exit * exit_penalty``
+    """
+    breadth_term = breadth_active * breadth_bonus
+
     share_term = 0.0
-    if median_share is not None and breadth_active > 0:
-        share_term = breadth_active * median_share
+    if median_share is not None and breadth_active > 0 and median_share > 0:
+        share_term = breadth_active * math.log1p(median_share) * share_weight
 
     weight_term = 0.0
     if median_weight is not None and breadth_weight_up > 0:
         weight_term = breadth_weight_up * median_weight * weight_scale
 
-    return share_term + weight_term + new_entry_count * new_boost
+    hold_term = max(0, int(breadth_hold)) * hold_bonus
+
+    return (
+        breadth_term
+        + share_term
+        + weight_term
+        + new_entry_count * new_boost
+        + hold_term
+        - breadth_exit * exit_penalty
+    )
 
 
 def share_activity_score(breadth_active: int, median_share: float | None) -> float:
@@ -106,6 +142,10 @@ def aggregate_by_stock(
     rank_mode: RankMode = "composite",
     weight_scale: float = DEFAULT_WEIGHT_SCALE,
     new_boost: float = DEFAULT_NEW_BOOST,
+    breadth_bonus: float = DEFAULT_BREADTH_BONUS,
+    share_weight: float = DEFAULT_SHARE_WEIGHT,
+    exit_penalty: float = DEFAULT_EXIT_PENALTY,
+    hold_bonus: float = DEFAULT_HOLD_BONUS,
 ) -> list[StockAggregate]:
     by_stock: dict[str, list[FundStockMetrics]] = {}
     for m in metrics:
@@ -122,6 +162,7 @@ def aggregate_by_stock(
         weights: list[float] = []
         breadth_active = 0
         breadth_exit = 0
+        breadth_hold = 0
         breadth_weight_up = 0
         new_entry_count = 0
 
@@ -150,6 +191,10 @@ def aggregate_by_stock(
                 elif m.share_change_pct < 0:
                     breadth_exit += 1
                     share_for_median.append(m.share_change_pct)
+                elif m.current_weight_pct > 0:
+                    breadth_hold += 1
+            elif m.activity == "hold" and m.current_weight_pct > 0:
+                breadth_hold += 1
 
             if m.weight_delta_pp is not None:
                 weights.append(m.weight_delta_pp)
@@ -167,8 +212,14 @@ def aggregate_by_stock(
                 breadth_weight_up,
                 median_weight,
                 new_entry_count,
+                breadth_exit,
+                breadth_hold,
                 weight_scale=weight_scale,
                 new_boost=new_boost,
+                breadth_bonus=breadth_bonus,
+                share_weight=share_weight,
+                exit_penalty=exit_penalty,
+                hold_bonus=hold_bonus,
             )
         elif rank_mode == "share_activity":
             score = share_activity_score(breadth_active, median_share)
@@ -203,6 +254,8 @@ def aggregate_by_stock(
                 new_entry_count=new_entry_count,
                 fund_count=len(fund_rows),
                 funds=contributions,
+                breadth_exit=breadth_exit,
+                breadth_hold=breadth_hold,
             )
         )
 

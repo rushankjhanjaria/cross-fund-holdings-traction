@@ -17,6 +17,8 @@ def test_mini_html_payload_merged_wockhardt(mini_june_folder: Path) -> None:
     assert wock[0]["fundCount"] == 2
     assert wock[0]["score"] > 0
     assert "mixedSignal" in wock[0]
+    assert wock[0].get("stockKey")
+    assert wock[0]["stockKey"].startswith("NAME:") or wock[0]["stockKey"].startswith("NSE:")
 
 
 def test_actionable_only_payload_count(mini_june_folder: Path) -> None:

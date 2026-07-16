@@ -18,6 +18,8 @@ def stock_to_dict(stock: StockAggregate, *, entry_estimate: dict | None = None) 
         "score": round(stock.score, 4),
         "median_share_change_pct": stock.median_share_change_pct,
         "breadth_active": stock.breadth_active,
+        "breadth_exit": stock.breadth_exit,
+        "breadth_hold": stock.breadth_hold,
         "median_weight_delta_pp": stock.median_weight_delta_pp,
         "breadth_weight_up": stock.breadth_weight_up,
         "new_entry_count": stock.new_entry_count,
