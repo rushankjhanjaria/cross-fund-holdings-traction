@@ -6,7 +6,17 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from mf_screener.aggregate import RankMode, StockAggregate, aggregate_by_stock
+from mf_screener.aggregate import (
+    DEFAULT_BREADTH_BONUS,
+    DEFAULT_EXIT_PENALTY,
+    DEFAULT_HOLD_BONUS,
+    DEFAULT_NEW_BOOST,
+    DEFAULT_SHARE_WEIGHT,
+    DEFAULT_WEIGHT_SCALE,
+    RankMode,
+    StockAggregate,
+    aggregate_by_stock,
+)
 from mf_screener.load import load_holdings_from_folder
 from mf_screener.metrics import enrich_all
 from mf_screener.prices import entry_estimate_dict, fetch_prices
@@ -82,8 +92,12 @@ def run(
     *,
     rank_mode: RankMode = "composite",
     include_holds: bool = False,
-    weight_scale: float = 10.0,
-    new_boost: float = 50.0,
+    weight_scale: float = DEFAULT_WEIGHT_SCALE,
+    new_boost: float = DEFAULT_NEW_BOOST,
+    breadth_bonus: float = DEFAULT_BREADTH_BONUS,
+    share_weight: float = DEFAULT_SHARE_WEIGHT,
+    exit_penalty: float = DEFAULT_EXIT_PENALTY,
+    hold_bonus: float = DEFAULT_HOLD_BONUS,
     enrich_prices: bool = False,
     refresh_prices: bool = False,
 ) -> RunResult:
@@ -94,6 +108,10 @@ def run(
         rank_mode=rank_mode,
         weight_scale=weight_scale,
         new_boost=new_boost,
+        breadth_bonus=breadth_bonus,
+        share_weight=share_weight,
+        exit_penalty=exit_penalty,
+        hold_bonus=hold_bonus,
     )
     stocks = filter_for_report(stocks_all, include_holds=include_holds)
     price_month = resolve_price_month(folder)

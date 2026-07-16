@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from pathlib import Path
+from typing import Any
 
 MONTH_NUM_TO_NAME: dict[str, str] = {
     "01": "January",
@@ -112,3 +114,30 @@ def format_month_label(year_month: str) -> str:
     yyyy, mm = match.group(1), match.group(2)
     name = MONTH_NUM_TO_NAME.get(mm, mm)
     return f"{name} {yyyy}"
+
+
+def month_bounds(month: str) -> tuple[date, date]:
+    """Inclusive start / exclusive end calendar dates for YYYY-MM."""
+    year, mm = month.split("-")
+    y, m = int(year), int(mm)
+    start = date(y, m, 1)
+    if m == 12:
+        end = date(y + 1, 1, 1)
+    else:
+        end = date(y, m + 1, 1)
+    return start, end
+
+
+def month_id_from_report(report: dict[str, Any], *, fallback_path: Path | None = None) -> str:
+    """Prefer price_month on the report JSON; else resolve from folder field."""
+    month_id = str(report.get("price_month") or "").strip()
+    if month_id:
+        return month_id[:7] if len(month_id) >= 7 else month_id
+    folder = str(report.get("folder") or "").strip()
+    if folder:
+        try:
+            return resolve_report_month(Path(folder))
+        except ValueError:
+            pass
+    _ = fallback_path
+    return ""

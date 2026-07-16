@@ -6,7 +6,7 @@ from collections import defaultdict
 from typing import Any, Iterable
 
 from mf_screener.aggregate import FundContribution, StockAggregate
-from mf_screener.load import canonical_holding_display_name
+from mf_screener.load import canonical_holding_display_name, stock_key
 from mf_screener.reporting.activity import (
     FundCsvActivity,
     append_activity_line,
@@ -16,6 +16,7 @@ from mf_screener.reporting.activity import (
 from mf_screener.reporting.format import (
     direction_label_from_aggregate,
     entry_price_fields_camel,
+    entry_price_fields_camel_from_csv_row,
     format_pct_of_aum,
     format_share_pct_change,
     stock_csv_direction,
@@ -71,12 +72,15 @@ def _stock_payload_core(
     reduces: list[dict[str, str]],
     holds: list[dict[str, str]],
     price_fields: dict[str, str],
+    stock_key_value: str = "",
 ) -> dict[str, Any]:
     add_count = len(adds)
     reduce_count = len(reduces)
     hold_count = len(holds)
     fund_count = add_count + reduce_count + hold_count
+    key = (stock_key_value or "").strip() or stock_key(nse, "", stock_name)
     return {
+        "stockKey": key,
         "stockName": stock_name,
         "nse": nse,
         "stockDirection": stock_direction,
@@ -117,6 +121,7 @@ def stock_payload_from_aggregate(
         reduces=reduces,
         holds=holds,
         price_fields=entry_price_fields_camel(est if isinstance(est, dict) else None),
+        stock_key_value=stock.stock_key,
     )
 
 
@@ -129,14 +134,20 @@ def stock_payload_from_report_json(
 
     est = stock.get("entry_estimate")
     ctx = name_map or NameMapContext.load()
+    name = str(stock.get("name") or "")
     nse = ctx.resolve_ticker(
-        name=str(stock.get("name") or ""),
+        name=name,
         nse_from_row=str(stock.get("nse") or stock.get("bse") or ""),
         entry_estimate=est if isinstance(est, dict) else None,
     )
+    key = str(stock.get("stock_key") or "").strip() or stock_key(
+        str(stock.get("nse") or ""),
+        str(stock.get("bse") or ""),
+        name,
+    )
 
     return _stock_payload_core(
-        stock_name=str(stock.get("name") or ""),
+        stock_name=name,
         nse=nse,
         stock_direction=direction_label_from_aggregate(str(stock.get("direction") or "")),
         score=float(stock.get("score") or 0),
@@ -144,6 +155,7 @@ def stock_payload_from_report_json(
         reduces=reduces,
         holds=holds,
         price_fields=entry_price_fields_camel(est if isinstance(est, dict) else None),
+        stock_key_value=key,
     )
 
 
@@ -210,20 +222,7 @@ def build_stock_payloads_from_csv_rows(
             name=stock_name,
             nse_from_row=(sample.get("nse") or "").strip(),
         )
-        snake = {
-            "month_high": sample.get("month_high") or "",
-            "month_low": sample.get("month_low") or "",
-            "estimated_entry_mid": sample.get("estimated_entry_mid") or "",
-            "close_latest": sample.get("close_latest") or "",
-            "pct_vs_entry_mid": sample.get("pct_vs_entry_mid") or "",
-        }
-        price_camel = {
-            "monthHigh": snake["month_high"],
-            "monthLow": snake["month_low"],
-            "entryMid": snake["estimated_entry_mid"],
-            "closeLatest": snake["close_latest"],
-            "pctVsMid": snake["pct_vs_entry_mid"],
-        }
+        price_camel = entry_price_fields_camel_from_csv_row(sample)
         stocks.append(
             _stock_payload_core(
                 stock_name=stock_name,
@@ -234,6 +233,7 @@ def build_stock_payloads_from_csv_rows(
                 reduces=reduces,
                 holds=holds,
                 price_fields=price_camel,
+                stock_key_value=stock_key(nse, "", stock_name),
             )
         )
 

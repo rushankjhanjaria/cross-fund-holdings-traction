@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mf-screener"
 version = "0.1.0"
-description = "Mutual fund holdings traction screener from Trendlyne CSV exports"
+description = "Mutual fund holdings traction screener (RupeeVest / Trendlyne CSV exports)"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
@@ -23,6 +23,7 @@ mf_screener = ["templates/*"]
 
 [project.scripts]
 mf-screener = "mf_screener.cli:main"
+mf-screener-month = "mf_screener.month_run:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

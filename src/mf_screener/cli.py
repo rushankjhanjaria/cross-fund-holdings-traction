@@ -3,17 +3,22 @@
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
-from mf_screener.aggregate import RankMode
+from mf_screener.aggregate import (
+    DEFAULT_BREADTH_BONUS,
+    DEFAULT_EXIT_PENALTY,
+    DEFAULT_HOLD_BONUS,
+    DEFAULT_NEW_BOOST,
+    DEFAULT_SHARE_WEIGHT,
+    DEFAULT_WEIGHT_SCALE,
+)
 from mf_screener.pipeline import run
 from mf_screener.report_csv import write_csv_report
-from mf_screener.report_html import HtmlReportMeta, refresh_combined_html_report, write_html_report
-from mf_screener.reporting.json_report import build_report
 from mf_screener.reporting.symbol_context import NameMapContext
 from mf_screener.reporting.terminal import print_tree
+from mf_screener.reporting.write_outputs import write_traction_reports
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -65,14 +70,44 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--weight-scale",
         type=float,
-        default=10.0,
-        help="Scale median weight delta in composite score (default: 10)",
+        default=DEFAULT_WEIGHT_SCALE,
+        help=f"Scale median weight delta in composite score (default: {DEFAULT_WEIGHT_SCALE:g})",
     )
     parser.add_argument(
         "--new-boost",
         type=float,
-        default=50.0,
-        help="Score boost per new fund entry in composite (default: 50)",
+        default=DEFAULT_NEW_BOOST,
+        help=f"Score boost per new fund entry in composite (default: {DEFAULT_NEW_BOOST:g})",
+    )
+    parser.add_argument(
+        "--breadth-bonus",
+        type=float,
+        default=DEFAULT_BREADTH_BONUS,
+        help=f"Points per active (buying) fund in composite (default: {DEFAULT_BREADTH_BONUS:g})",
+    )
+    parser.add_argument(
+        "--share-weight",
+        type=float,
+        default=DEFAULT_SHARE_WEIGHT,
+        help=(
+            "Weight on log1p(median share %% change) × breadth in composite "
+            f"(default: {DEFAULT_SHARE_WEIGHT:g})"
+        ),
+    )
+    parser.add_argument(
+        "--exit-penalty",
+        type=float,
+        default=DEFAULT_EXIT_PENALTY,
+        help=f"Penalty per fund reducing/exiting in composite (default: {DEFAULT_EXIT_PENALTY:g})",
+    )
+    parser.add_argument(
+        "--hold-bonus",
+        type=float,
+        default=DEFAULT_HOLD_BONUS,
+        help=(
+            "Points per fund still holding (unchanged shares) in composite "
+            f"(default: {DEFAULT_HOLD_BONUS:g}; kept below active breadth bonus)"
+        ),
     )
     parser.add_argument(
         "--include-holds",
@@ -101,6 +136,10 @@ def main(argv: list[str] | None = None) -> int:
             include_holds=args.include_holds,
             weight_scale=args.weight_scale,
             new_boost=args.new_boost,
+            breadth_bonus=args.breadth_bonus,
+            share_weight=args.share_weight,
+            exit_penalty=args.exit_penalty,
+            hold_bonus=args.hold_bonus,
             enrich_prices=args.enrich_prices,
             refresh_prices=args.refresh_prices,
         )
@@ -115,46 +154,18 @@ def main(argv: list[str] | None = None) -> int:
     print_tree(stocks, top=args.top)
 
     if args.out:
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        report = build_report(
-            stocks,
+        write_traction_reports(
+            result,
             folder=args.folder,
+            out_json=args.out,
             rank=args.rank,
-            stock_count_total=len(result.stocks_all),
             include_holds=args.include_holds,
-            price_month=result.price_month,
-            entry_by_stock_key=entry_by_key,
-        )
-        args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")
-        print(f"Wrote JSON report to {args.out}", file=sys.stderr)
-
-        csv_path = args.csv if args.csv is not None else args.out.with_suffix(".csv")
-        write_csv_report(stocks, csv_path, entry_by_stock_key=entry_by_key, name_map=name_map)
-        print(f"Wrote CSV report to {csv_path}", file=sys.stderr)
-
-        html_path = args.html if args.html is not None else args.out.with_suffix(".html")
-        write_html_report(
-            stocks,
-            html_path,
-            meta=HtmlReportMeta(
-                folder=str(args.folder.resolve()),
-                price_month=result.price_month,
-                rank_mode=args.rank,
-                include_holds=args.include_holds,
-            ),
-            entry_by_stock_key=entry_by_key,
             name_map=name_map,
+            csv_path=args.csv,
+            html_path=args.html,
+            combined_html=args.combined_html,
+            refresh_combined=True,
         )
-        print(f"Wrote HTML report to {html_path}", file=sys.stderr)
-
-        combined_path = args.combined_html or (args.out.parent / "traction.html")
-        if refresh_combined_html_report(
-            args.out.parent,
-            combined_path,
-            prefer_month_id=result.price_month,
-            name_map=name_map,
-        ):
-            print(f"Wrote combined HTML report to {combined_path}", file=sys.stderr)
     elif args.csv:
         write_csv_report(stocks, args.csv, entry_by_stock_key=entry_by_key, name_map=name_map)
         print(f"Wrote CSV report to {args.csv}", file=sys.stderr)

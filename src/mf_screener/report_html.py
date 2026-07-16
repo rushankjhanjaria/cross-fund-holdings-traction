@@ -15,7 +15,13 @@ from mf_screener.reporting.payload import (
     build_stock_payloads_from_csv_rows,
     build_stock_payloads_from_report_json,
 )
+from mf_screener.reporting.persistence import attach_persistence_to_bundles
 from mf_screener.reporting.symbol_context import NameMapContext
+from mf_screener.reporting.watchlist import (
+    load_watchlist,
+    merge_auto_watchlist,
+    save_watchlist,
+)
 
 
 @dataclass(frozen=True)
@@ -131,24 +137,37 @@ def build_combined_payload(
     month_bundles: list[dict[str, Any]],
     *,
     default_month_id: str | None = None,
+    watchlist: dict[str, Any] | None = None,
+    insights: list[dict[str, Any]] | None = None,
+    insights_by_month: dict[str, list] | None = None,
+    top_traction_by_month: dict[str, list] | None = None,
 ) -> dict[str, Any]:
     ordered = sorted(month_bundles, key=lambda m: str(m.get("id", "")), reverse=True)
     default = default_month_id or (ordered[0]["id"] if ordered else "")
-    return {"defaultMonthId": default, "months": ordered}
+    payload: dict[str, Any] = {"defaultMonthId": default, "months": ordered}
+    if watchlist is not None:
+        payload["watchlist"] = {
+            "version": int(watchlist.get("version") or 1),
+            "items": list(watchlist.get("items") or []),
+        }
+    else:
+        payload["watchlist"] = {"version": 1, "items": []}
+    by_month = dict(insights_by_month or {})
+    payload["insightsByMonth"] = by_month
+    if by_month:
+        payload["insights"] = list(by_month.get(default, []) or [])
+    else:
+        payload["insights"] = list(insights or [])
+    traction_by_month = dict(top_traction_by_month or {})
+    payload["topTractionByMonth"] = traction_by_month
+    payload["topTraction"] = list(traction_by_month.get(default, []) or [])
+    return payload
 
 
 def _resolve_month_id(report: dict[str, Any], json_path: Path) -> str:
-    month_id = (report.get("price_month") or "").strip()
-    if not month_id:
-        folder = (report.get("folder") or "").strip()
-        if folder:
-            from mf_screener.report_month import resolve_report_month
+    from mf_screener.report_month import month_id_from_report
 
-            try:
-                month_id = resolve_report_month(Path(folder))
-            except ValueError:
-                month_id = ""
-    return month_id
+    return month_id_from_report(report, fallback_path=json_path)
 
 
 def load_month_bundles_from_output_dir(
@@ -202,7 +221,57 @@ def load_month_bundles_from_output_dir(
             }
         )
 
-    return sorted(bundles, key=lambda m: m["id"], reverse=True)
+    bundles = sorted(bundles, key=lambda m: m["id"], reverse=True)
+    attach_persistence_to_bundles(bundles)
+    return bundles
+
+
+def _month_id_from_insights_path(output_dir: Path, path: Path, data: Any) -> str:
+    if isinstance(data, dict):
+        month_id = str(data.get("monthId") or data.get("price_month") or "").strip()
+        if month_id:
+            return month_id
+    stem = path.name.replace("_insights.json", "")
+    traction = output_dir / f"{stem}_traction.json"
+    if traction.is_file():
+        try:
+            report = json.loads(traction.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            report = {}
+        from mf_screener.report_month import month_id_from_report
+
+        return month_id_from_report(report, fallback_path=traction)
+    return ""
+
+
+def _load_insights_docs(output_dir: Path) -> dict[str, dict[str, Any]]:
+    """Read every *_insights.json once; key full docs by monthId."""
+    by_month: dict[str, dict[str, Any]] = {}
+    for path in sorted(output_dir.glob("*_insights.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        month_id = _month_id_from_insights_path(output_dir, path, data)
+        if not month_id:
+            continue
+        if isinstance(data, dict):
+            by_month[month_id] = data
+        elif isinstance(data, list):
+            by_month[month_id] = {"insights": data, "topTraction": []}
+    return by_month
+
+
+def _load_all_insights(output_dir: Path) -> dict[str, list]:
+    """Narrative insights keyed by monthId."""
+    docs = _load_insights_docs(output_dir)
+    return {mid: list(doc.get("insights") or []) for mid, doc in docs.items()}
+
+
+def _load_all_top_traction(output_dir: Path) -> dict[str, list]:
+    """topTraction arrays keyed by monthId (same docs as insights)."""
+    docs = _load_insights_docs(output_dir)
+    return {mid: list(doc.get("topTraction") or []) for mid, doc in docs.items()}
 
 
 def refresh_combined_html_report(
@@ -211,6 +280,7 @@ def refresh_combined_html_report(
     *,
     prefer_month_id: str | None = None,
     name_map: NameMapContext | None = None,
+    auto_watchlist: bool = True,
 ) -> bool:
     """Rebuild multi-month HTML from all *_traction.json in output_dir."""
     bundles = load_month_bundles_from_output_dir(output_dir, name_map=name_map)
@@ -219,7 +289,27 @@ def refresh_combined_html_report(
     default = prefer_month_id
     if default and not any(b["id"] == default for b in bundles):
         default = None
-    payload = build_combined_payload(bundles, default_month_id=default)
+    newest = bundles[0]
+    watchlist = load_watchlist(output_dir)
+    if auto_watchlist:
+        watchlist = merge_auto_watchlist(
+            watchlist,
+            stocks=list(newest.get("stocks") or []),
+            month_id=str(newest.get("id") or ""),
+        )
+        save_watchlist(output_dir, watchlist)
+    docs = _load_insights_docs(output_dir)
+    insights_by_month = {mid: list(doc.get("insights") or []) for mid, doc in docs.items()}
+    top_traction_by_month = {
+        mid: list(doc.get("topTraction") or []) for mid, doc in docs.items()
+    }
+    payload = build_combined_payload(
+        bundles,
+        default_month_id=default,
+        watchlist=watchlist,
+        insights_by_month=insights_by_month,
+        top_traction_by_month=top_traction_by_month,
+    )
     write_html_from_payload(combined_path, payload)
     return True
 
@@ -240,6 +330,7 @@ def write_html_report(
         entry_by_stock_key=entry_by_stock_key,
         name_map=name_map,
     )
+    attach_persistence_to_bundles([bundle])
     payload = build_combined_payload([bundle], default_month_id=month_id)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(render_html_document(payload), encoding="utf-8")

@@ -82,8 +82,11 @@ CSV_FIELDNAMES = [
     "month_high",
     "month_low",
     "estimated_entry_mid",
+    "month_end_close",
+    "sma_30",
     "close_latest",
     "pct_vs_entry_mid",
+    "pct_vs_sma",
 ]
 
 

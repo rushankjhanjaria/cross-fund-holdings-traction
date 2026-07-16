@@ -1,4 +1,4 @@
-"""Load Trendlyne mutual fund holding CSVs from a folder."""
+"""Load mutual fund holding CSVs from a folder (RupeeVest / Trendlyne exports)."""
 
 from __future__ import annotations
 
