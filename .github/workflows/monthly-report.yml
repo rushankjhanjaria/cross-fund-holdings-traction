@@ -1,8 +1,8 @@
 # Build traction reports from RupeeVest and publish HTML to GitHub Pages.
 #
 # History: prior month JSON/insights live under gh-pages/data/. Each run restores
-# them, screens the target month, rebuilds multi-month traction.html, and redeploys
-# HTML + data/ so April/May/… accumulate over time.
+# them, screens the target month only, rebuilds multi-month traction.html, and
+# redeploys HTML + data/ to the gh-pages branch.
 #
 # Setup (once):
 #   Repo Settings → Pages → Build and deployment

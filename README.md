@@ -124,7 +124,6 @@ Each run **restores** prior `data/` from `gh-pages`, screens the target month, r
    - Do **not** use `/docs` on `main` (that folder is for markdown notes only and has no `index.html`).
 2. **Visibility:** Pages is free for **public** repos. Private repos need GitHub Pro/Team (or make the repo public).
 3. **Optional Gemini:** **Settings → Secrets and variables → Actions** → add `GEMINI_API_KEY`. Omit for rules-only insights.
-4. **Seed history (optional):** Run the workflow once per past month (`month=april`, then `may`, then `june`, …). Each run keeps prior JSON and adds the new month.
 
 ### Run it
 
@@ -137,7 +136,7 @@ Each run **restores** prior `data/` from `gh-pages`, screens the target month, r
 | `month` | *(previous UTC month)* | Folder slug, e.g. `june`. Empty → prior month (disclosure lag). |
 | `overwrite_funds` | on | Re-download CSVs from RupeeVest |
 | `refresh_prices` | on | Refresh yfinance prices |
-| **Deploy HTML to GitHub Pages** | **on** | Push built HTML to `gh-pages` |
+| **Deploy HTML to GitHub Pages** | **on** | Push HTML + `data/` history to `gh-pages` |
 
 4. Leave deploy checked. For a known month, set **month** explicitly (e.g. `june`).
 
