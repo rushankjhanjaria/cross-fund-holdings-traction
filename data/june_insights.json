@@ -1,0 +1,306 @@
+{
+  "monthId": "2026-06",
+  "source": "rules",
+  "report": "/Users/jhanjariarushank/Cursor/github/cross-fund-holdings-traction/output/json/june_traction.json",
+  "topTraction": [
+    {
+      "rank": 1,
+      "stockKey": "NAME:icici bank",
+      "name": "ICICI Bank Limited",
+      "score": 215.4765,
+      "fundCount": 25,
+      "fundDelta": 0,
+      "addCount": 8,
+      "reduceCount": 0,
+      "pctVsMid": "8.7991",
+      "pctVsSma": "8.7991",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 2,
+      "stockKey": "NAME:hdfc bank",
+      "name": "HDFC Bank Limited",
+      "score": 215.3114,
+      "fundCount": 23,
+      "fundDelta": 0,
+      "addCount": 12,
+      "reduceCount": 0,
+      "pctVsMid": "6.3592",
+      "pctVsSma": "6.3592",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 3,
+      "stockKey": "NAME:meesho",
+      "name": "Meesho Ltd.",
+      "score": 188.8876,
+      "fundCount": 13,
+      "fundDelta": 6,
+      "addCount": 9,
+      "reduceCount": 0,
+      "pctVsMid": "3",
+      "pctVsSma": "3",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 4,
+      "stockKey": "NAME:vedanta aluminium metal",
+      "name": "Vedanta Aluminium Metal Limited",
+      "score": 133.4396,
+      "fundCount": 13,
+      "fundDelta": 13,
+      "addCount": 5,
+      "reduceCount": 3,
+      "pctVsMid": "",
+      "pctVsSma": "",
+      "persistenceStatus": "new_this_month"
+    },
+    {
+      "rank": 5,
+      "stockKey": "NAME:billionbrains garage ventures",
+      "name": "Billionbrains Garage Ventures Limited (Groww)",
+      "score": 94.4991,
+      "fundCount": 20,
+      "fundDelta": 4,
+      "addCount": 8,
+      "reduceCount": 1,
+      "pctVsMid": "5.917",
+      "pctVsSma": "5.917",
+      "persistenceStatus": "continued_mixed"
+    },
+    {
+      "rank": 6,
+      "stockKey": "NAME:acme solar holdings",
+      "name": "ACME SOLAR HOLDINGS LTD.",
+      "score": 92.0524,
+      "fundCount": 6,
+      "fundDelta": 1,
+      "addCount": 5,
+      "reduceCount": 0,
+      "pctVsMid": "18.3942",
+      "pctVsSma": "18.3942",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 7,
+      "stockKey": "NAME:shriram finance",
+      "name": "Shriram Finance Limited",
+      "score": 87.8875,
+      "fundCount": 14,
+      "fundDelta": 1,
+      "addCount": 6,
+      "reduceCount": 0,
+      "pctVsMid": "7.0939",
+      "pctVsSma": "7.0939",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 8,
+      "stockKey": "NAME:state bank of",
+      "name": "STATE BANK OF INDIA.",
+      "score": 84.6539,
+      "fundCount": 18,
+      "fundDelta": 0,
+      "addCount": 7,
+      "reduceCount": 0,
+      "pctVsMid": "3.3722",
+      "pctVsSma": "3.3722",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 9,
+      "stockKey": "NAME:schneider electric infrastructure",
+      "name": "Schneider Electric Infrastructure Limited",
+      "score": 82.65,
+      "fundCount": 3,
+      "fundDelta": 3,
+      "addCount": 3,
+      "reduceCount": 0,
+      "pctVsMid": "4.5312",
+      "pctVsSma": "4.5312",
+      "persistenceStatus": "new_this_month"
+    },
+    {
+      "rank": 10,
+      "stockKey": "NAME:pine labs",
+      "name": "Pine Labs Limited",
+      "score": 81.5349,
+      "fundCount": 14,
+      "fundDelta": 3,
+      "addCount": 6,
+      "reduceCount": 0,
+      "pctVsMid": "4.2644",
+      "pctVsSma": "4.2644",
+      "persistenceStatus": "still_adding"
+    }
+  ],
+  "insights": [
+    {
+      "id": "ins_01",
+      "section": "still_early",
+      "headline": "Still early: Meesho Ltd.",
+      "action": "research",
+      "stockKeys": [
+        "NAME:meesho"
+      ],
+      "body": "Meesho Ltd. shows multi-fund adds while price is still near the 30d SMA (funds 7\u219213, pctVsSma=3; funds include Invesco India Midcap 06, Invesco India Smallcap 06). Next: open the stock card and compare add breadth vs how far price already moved.",
+      "citations": [
+        {
+          "stockKey": "NAME:meesho",
+          "fields": {
+            "fundCount": 13,
+            "addCount": 9,
+            "reduceCount": 0,
+            "pctVsSma": "3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_02",
+      "section": "still_early",
+      "headline": "Still early: STATE BANK OF INDIA.",
+      "action": "research",
+      "stockKeys": [
+        "NAME:state bank of"
+      ],
+      "body": "STATE BANK OF INDIA. shows multi-fund adds while price is still near the 30d SMA (funds 18\u219218, pctVsSma=3.3722; funds include Parag Parikh Flexi Cap 06, Abakkus Small Cap 06). Next: open the stock card and compare add breadth vs how far price already moved.",
+      "citations": [
+        {
+          "stockKey": "NAME:state bank of",
+          "fields": {
+            "fundCount": 18,
+            "addCount": 7,
+            "reduceCount": 0,
+            "pctVsSma": "3.3722"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_03",
+      "section": "still_early",
+      "headline": "Still early: Schneider Electric Infrastructure Limited",
+      "action": "research",
+      "stockKeys": [
+        "NAME:schneider electric infrastructure"
+      ],
+      "body": "Schneider Electric Infrastructure Limited shows multi-fund adds while price is still near the 30d SMA (funds 0\u21923, pctVsSma=4.5312; funds include Motilal Oswal Manufacturing 06, Motilal Oswal Small Cap 06). Next: open the stock card and compare add breadth vs how far price already moved.",
+      "citations": [
+        {
+          "stockKey": "NAME:schneider electric infrastructure",
+          "fields": {
+            "fundCount": 3,
+            "addCount": 3,
+            "reduceCount": 0,
+            "pctVsSma": "4.5312"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_04",
+      "section": "exit_pressure",
+      "headline": "Exit pressure: Thangamayil Jewellery Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:thangamayil jewellery"
+      ],
+      "body": "Thangamayil Jewellery Limited shows multi-fund selling (reduceCount=2, funds 3\u21923; funds include Dsp Small Cap 06, Canara Rob Small Cap 06). Next: open reduce fund lines and decide whether this challenges a held long.",
+      "citations": [
+        {
+          "stockKey": "NAME:thangamayil jewellery",
+          "fields": {
+            "fundCount": 3,
+            "addCount": 0,
+            "reduceCount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_05",
+      "section": "exit_pressure",
+      "headline": "Exit pressure: CCL Products (India) Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:ccl products"
+      ],
+      "body": "CCL Products (India) Limited shows multi-fund selling (reduceCount=1, funds 5\u21925; funds include Motilal Oswal Small Cap 06, Axis Small Cap 06). Next: open reduce fund lines and decide whether this challenges a held long.",
+      "citations": [
+        {
+          "stockKey": "NAME:ccl products",
+          "fields": {
+            "fundCount": 5,
+            "addCount": 0,
+            "reduceCount": 1,
+            "persistence.status": "still_reducing",
+            "priorFundCount": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_06",
+      "section": "exit_pressure",
+      "headline": "Exit pressure: Adani Ports and Special Economic Zone Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:adani ports and special economic zone"
+      ],
+      "body": "Adani Ports and Special Economic Zone Limited shows multi-fund selling (reduceCount=1, funds 7\u21927; funds include Helios Flexi Cap 06, Tata Flexi Cap 06). Next: open reduce fund lines and decide whether this challenges a held long.",
+      "citations": [
+        {
+          "stockKey": "NAME:adani ports and special economic zone",
+          "fields": {
+            "fundCount": 7,
+            "addCount": 0,
+            "reduceCount": 1,
+            "persistence.status": "still_reducing",
+            "priorFundCount": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_07",
+      "section": "debate",
+      "headline": "Debate: Vedanta Aluminium Metal Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:vedanta aluminium metal"
+      ],
+      "body": "Vedanta Aluminium Metal Limited shows fund disagreement (addCount=5, reduceCount=3, fundCount=13; funds include Mirae Asset Midcap 06, Abakkus Small Cap 06). Next: open add and reduce fund cards and note which AMCs disagree.",
+      "citations": [
+        {
+          "stockKey": "NAME:vedanta aluminium metal",
+          "fields": {
+            "fundCount": 13,
+            "addCount": 5,
+            "reduceCount": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_08",
+      "section": "debate",
+      "headline": "Debate: Billionbrains Garage Ventures Limited (Groww)",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:billionbrains garage ventures"
+      ],
+      "body": "Billionbrains Garage Ventures Limited (Groww) shows fund disagreement (addCount=8, reduceCount=1, fundCount=20; funds include Helios Mid Cap 06, Helios Small Cap 06). Next: open add and reduce fund cards and note which AMCs disagree.",
+      "citations": [
+        {
+          "stockKey": "NAME:billionbrains garage ventures",
+          "fields": {
+            "fundCount": 20,
+            "addCount": 8,
+            "reduceCount": 1
+          }
+        }
+      ]
+    }
+  ]
+}

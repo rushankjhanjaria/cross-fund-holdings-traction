@@ -1,0 +1,224 @@
+{
+  "monthId": "2026-04",
+  "source": "rules",
+  "report": "/Users/jhanjariarushank/Cursor/github/cross-fund-holdings-traction/output/json/april_traction.json",
+  "topTraction": [
+    {
+      "rank": 1,
+      "stockKey": "NAME:vedanta aluminium metal",
+      "name": "Vedanta Aluminium Metal Limited",
+      "score": 206.05,
+      "fundCount": 13,
+      "fundDelta": 13,
+      "addCount": 13,
+      "reduceCount": 0,
+      "pctVsMid": "",
+      "pctVsSma": "",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 2,
+      "stockKey": "NAME:hfcl",
+      "name": "HFCL Limited",
+      "score": 197.9,
+      "fundCount": 2,
+      "fundDelta": 2,
+      "addCount": 1,
+      "reduceCount": 0,
+      "pctVsMid": "167.1593",
+      "pctVsSma": "167.1593",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 3,
+      "stockKey": "NAME:malco energy",
+      "name": "Malco Energy Limited",
+      "score": 192.4,
+      "fundCount": 13,
+      "fundDelta": 13,
+      "addCount": 13,
+      "reduceCount": 0,
+      "pctVsMid": "",
+      "pctVsSma": "",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 4,
+      "stockKey": "NAME:talwandi sabo power",
+      "name": "Talwandi Sabo Power Limited",
+      "score": 172.9,
+      "fundCount": 13,
+      "fundDelta": 13,
+      "addCount": 13,
+      "reduceCount": 0,
+      "pctVsMid": "",
+      "pctVsSma": "",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 5,
+      "stockKey": "NAME:vedanta iron and steel",
+      "name": "Vedanta Iron And Steel Limited",
+      "score": 172.9,
+      "fundCount": 13,
+      "fundDelta": 13,
+      "addCount": 13,
+      "reduceCount": 0,
+      "pctVsMid": "",
+      "pctVsSma": "",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 6,
+      "stockKey": "NAME:suzlon energy",
+      "name": "Suzlon Energy Limited",
+      "score": 127.1544,
+      "fundCount": 4,
+      "fundDelta": 4,
+      "addCount": 3,
+      "reduceCount": 0,
+      "pctVsMid": "11.1697",
+      "pctVsSma": "11.1697",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 7,
+      "stockKey": "NAME:rbl bank",
+      "name": "RBL Bank Limited",
+      "score": 114.4656,
+      "fundCount": 12,
+      "fundDelta": 12,
+      "addCount": 8,
+      "reduceCount": 0,
+      "pctVsMid": "16.7341",
+      "pctVsSma": "16.7341",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 8,
+      "stockKey": "NAME:adani energy solutions",
+      "name": "Adani Energy Solutions Limited",
+      "score": 111.7024,
+      "fundCount": 3,
+      "fundDelta": 3,
+      "addCount": 2,
+      "reduceCount": 0,
+      "pctVsMid": "48.3894",
+      "pctVsSma": "48.3894",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 9,
+      "stockKey": "NAME:bse",
+      "name": "BSE Limited",
+      "score": 101.3803,
+      "fundCount": 16,
+      "fundDelta": 16,
+      "addCount": 4,
+      "reduceCount": 2,
+      "pctVsMid": "16.3503",
+      "pctVsSma": "16.3503",
+      "persistenceStatus": "unknown"
+    },
+    {
+      "rank": 10,
+      "stockKey": "NAME:pnb housing finance",
+      "name": "PNB Housing Finance Limited",
+      "score": 94.5625,
+      "fundCount": 13,
+      "fundDelta": 13,
+      "addCount": 6,
+      "reduceCount": 0,
+      "pctVsMid": "25.5546",
+      "pctVsSma": "25.5546",
+      "persistenceStatus": "unknown"
+    }
+  ],
+  "insights": [
+    {
+      "id": "ins_01",
+      "section": "still_early",
+      "headline": "Still early: HDFC Asset Management Company Limited",
+      "action": "research",
+      "stockKeys": [
+        "NAME:hdfc asset management"
+      ],
+      "body": "HDFC Asset Management Company Limited shows multi-fund adds while price is still near the 30d SMA (funds 0\u219212, pctVsSma=4.8591; funds include Motilal Oswal Flexi Cap 04, Sbi Innovative Opportunities 04). Next: open the stock card and compare add breadth vs how far price already moved.",
+      "citations": [
+        {
+          "stockKey": "NAME:hdfc asset management",
+          "fields": {
+            "fundCount": 12,
+            "addCount": 6,
+            "reduceCount": 0,
+            "pctVsSma": "4.8591"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_02",
+      "section": "debate",
+      "headline": "Debate: BSE Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:bse"
+      ],
+      "body": "BSE Limited shows fund disagreement (addCount=4, reduceCount=2, fundCount=16; funds include Helios Small Cap 04, Mirae Asset Flexi Cap 04). Next: open add and reduce fund cards and note which AMCs disagree.",
+      "citations": [
+        {
+          "stockKey": "NAME:bse",
+          "fields": {
+            "fundCount": 16,
+            "addCount": 4,
+            "reduceCount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_03",
+      "section": "watchlist_delta",
+      "headline": "Watchlist: Acme Solar Holdings Ltd",
+      "action": "monitor",
+      "stockKeys": [
+        "NAME:acme solar holdings"
+      ],
+      "body": "Watchlisted Acme Solar Holdings Ltd changed (funds 0\u21923, fundDelta=3, scoreDelta=-18.0; funds include Bandhan Small Cap 04, Nippon India Small Cap Fund G 04). Next: open the pinned card and re-check direction before next month.",
+      "citations": [
+        {
+          "stockKey": "NAME:acme solar holdings",
+          "fields": {
+            "fundCount": 3,
+            "fundDelta": 3,
+            "scoreDelta": -18.0,
+            "persistence.status": "unknown",
+            "priorFundCount": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_04",
+      "section": "watchlist_delta",
+      "headline": "Watchlist: Bajaj Finance Limited",
+      "action": "monitor",
+      "stockKeys": [
+        "NAME:bajaj finance"
+      ],
+      "body": "Watchlisted Bajaj Finance Limited changed (funds 0\u219211, fundDelta=11, scoreDelta=18.4; funds include Sbi Innovative Opportunities 04, Mirae Asset Flexi Cap 04). Next: open the pinned card and re-check direction before next month.",
+      "citations": [
+        {
+          "stockKey": "NAME:bajaj finance",
+          "fields": {
+            "fundCount": 11,
+            "fundDelta": 11,
+            "scoreDelta": 18.3967,
+            "persistence.status": "unknown",
+            "priorFundCount": 0
+          }
+        }
+      ]
+    }
+  ]
+}

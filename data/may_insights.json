@@ -1,0 +1,310 @@
+{
+  "monthId": "2026-05",
+  "source": "rules",
+  "report": "/Users/jhanjariarushank/Cursor/github/cross-fund-holdings-traction/output/json/may_traction.json",
+  "topTraction": [
+    {
+      "rank": 1,
+      "stockKey": "NAME:billionbrains garage ventures",
+      "name": "Billionbrains Garage Ventures Limited (Groww)",
+      "score": 203.6642,
+      "fundCount": 16,
+      "fundDelta": 9,
+      "addCount": 13,
+      "reduceCount": 0,
+      "pctVsMid": "2.4413",
+      "pctVsSma": "2.4413",
+      "persistenceStatus": "reversed"
+    },
+    {
+      "rank": 2,
+      "stockKey": "NAME:lenskart solutions",
+      "name": "Lenskart Solutions Limited",
+      "score": 188.7888,
+      "fundCount": 15,
+      "fundDelta": 6,
+      "addCount": 11,
+      "reduceCount": 0,
+      "pctVsMid": "5.0482",
+      "pctVsSma": "5.0482",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 3,
+      "stockKey": "NAME:adani enterprises",
+      "name": "Adani Enterprises Limited",
+      "score": 137.8051,
+      "fundCount": 6,
+      "fundDelta": 6,
+      "addCount": 5,
+      "reduceCount": 0,
+      "pctVsMid": "23.0638",
+      "pctVsSma": "23.0638",
+      "persistenceStatus": "new_this_month"
+    },
+    {
+      "rank": 4,
+      "stockKey": "NAME:gujarat gas",
+      "name": "Gujarat Gas Limited",
+      "score": 114.2512,
+      "fundCount": 7,
+      "fundDelta": 4,
+      "addCount": 5,
+      "reduceCount": 0,
+      "pctVsMid": "",
+      "pctVsSma": "",
+      "persistenceStatus": "reversed"
+    },
+    {
+      "rank": 5,
+      "stockKey": "NAME:indus towers",
+      "name": "Indus Towers Limited",
+      "score": 85.2243,
+      "fundCount": 15,
+      "fundDelta": 3,
+      "addCount": 6,
+      "reduceCount": 0,
+      "pctVsMid": "-2.8088",
+      "pctVsSma": "-2.8088",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 6,
+      "stockKey": "NAME:acutaas chemicals",
+      "name": "Acutaas Chemicals Limited",
+      "score": 77.85,
+      "fundCount": 9,
+      "fundDelta": 9,
+      "addCount": 3,
+      "reduceCount": 0,
+      "pctVsMid": "31.8057",
+      "pctVsSma": "31.8057",
+      "persistenceStatus": "new_this_month"
+    },
+    {
+      "rank": 7,
+      "stockKey": "NAME:icici bank",
+      "name": "ICICI Bank Limited",
+      "score": 71.101,
+      "fundCount": 25,
+      "fundDelta": -1,
+      "addCount": 9,
+      "reduceCount": 0,
+      "pctVsMid": "10.8329",
+      "pctVsSma": "10.8329",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 8,
+      "stockKey": "NAME:srf",
+      "name": "SRF Limited",
+      "score": 68.8249,
+      "fundCount": 12,
+      "fundDelta": 3,
+      "addCount": 5,
+      "reduceCount": 0,
+      "pctVsMid": "9.9057",
+      "pctVsSma": "9.9057",
+      "persistenceStatus": "still_adding"
+    },
+    {
+      "rank": 9,
+      "stockKey": "NAME:eternal",
+      "name": "Eternal Limited",
+      "score": 67.588,
+      "fundCount": 31,
+      "fundDelta": 2,
+      "addCount": 9,
+      "reduceCount": 1,
+      "pctVsMid": "14.4427",
+      "pctVsSma": "14.4427",
+      "persistenceStatus": "continued_mixed"
+    },
+    {
+      "rank": 10,
+      "stockKey": "NAME:sterlite technologies",
+      "name": "Sterlite Technologies Limited",
+      "score": 66.5582,
+      "fundCount": 5,
+      "fundDelta": 3,
+      "addCount": 4,
+      "reduceCount": 1,
+      "pctVsMid": "45.2287",
+      "pctVsSma": "45.2287",
+      "persistenceStatus": "continued_mixed"
+    }
+  ],
+  "insights": [
+    {
+      "id": "ins_01",
+      "section": "still_early",
+      "headline": "Still early: Billionbrains Garage Ventures Limited (Groww)",
+      "action": "research",
+      "stockKeys": [
+        "NAME:billionbrains garage ventures"
+      ],
+      "body": "Billionbrains Garage Ventures Limited (Groww) shows multi-fund adds while price is still near the 30d SMA (funds 7\u219216, pctVsSma=2.4413; funds include Canara Rob Mid Cap 05, Mirae Asset Midcap 05). Next: open the stock card and compare add breadth vs how far price already moved.",
+      "citations": [
+        {
+          "stockKey": "NAME:billionbrains garage ventures",
+          "fields": {
+            "fundCount": 16,
+            "addCount": 13,
+            "reduceCount": 0,
+            "pctVsSma": "2.4413"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_02",
+      "section": "still_early",
+      "headline": "Still early: Indus Towers Limited",
+      "action": "research",
+      "stockKeys": [
+        "NAME:indus towers"
+      ],
+      "body": "Indus Towers Limited shows multi-fund adds while price is still near the 30d SMA (funds 12\u219215, pctVsSma=-2.8088; funds include Quant Mid Cap Fund G 05, Quant Flexi Cap Fund G 05). Next: open the stock card and compare add breadth vs how far price already moved.",
+      "citations": [
+        {
+          "stockKey": "NAME:indus towers",
+          "fields": {
+            "fundCount": 15,
+            "addCount": 6,
+            "reduceCount": 0,
+            "pctVsSma": "-2.8088"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_03",
+      "section": "still_early",
+      "headline": "Still early: Entero Healthcare Solutions Ltd",
+      "action": "research",
+      "stockKeys": [
+        "NAME:entero healthcare solutions"
+      ],
+      "body": "Entero Healthcare Solutions Ltd shows multi-fund adds while price is still near the 30d SMA (funds 0\u21922, pctVsSma=-2.501; funds include Bank Of India Flexi Cap 05, Bank Of India Small Cap 05). Next: open the stock card and compare add breadth vs how far price already moved.",
+      "citations": [
+        {
+          "stockKey": "NAME:entero healthcare solutions",
+          "fields": {
+            "fundCount": 2,
+            "addCount": 2,
+            "reduceCount": 0,
+            "pctVsSma": "-2.501"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_04",
+      "section": "exit_pressure",
+      "headline": "Exit pressure: Netweb Technologies India Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:netweb technologies"
+      ],
+      "body": "Netweb Technologies India Limited shows multi-fund selling (reduceCount=1, funds 6\u21926; funds include Icici Pru Flexicap Fund G 05, Icici Pru Smallcap Fund G 05). Next: open reduce fund lines and decide whether this challenges a held long.",
+      "citations": [
+        {
+          "stockKey": "NAME:netweb technologies",
+          "fields": {
+            "fundCount": 6,
+            "addCount": 0,
+            "reduceCount": 1,
+            "persistence.status": "still_reducing",
+            "priorFundCount": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_05",
+      "section": "exit_pressure",
+      "headline": "Exit pressure: R R Kabel Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:r r kabel"
+      ],
+      "body": "R R Kabel Limited shows multi-fund selling (reduceCount=1, funds 5\u21924; funds include Bandhan Small Cap 05, Dsp Small Cap 05). Next: open reduce fund lines and decide whether this challenges a held long.",
+      "citations": [
+        {
+          "stockKey": "NAME:r r kabel",
+          "fields": {
+            "fundCount": 4,
+            "addCount": 0,
+            "reduceCount": 1,
+            "persistence.status": "still_reducing",
+            "priorFundCount": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_06",
+      "section": "exit_pressure",
+      "headline": "Exit pressure: Supreme Industries Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:supreme industries"
+      ],
+      "body": "Supreme Industries Limited shows multi-fund selling (reduceCount=1, funds 8\u21928; funds include Bandhan Midcap 05, Hdfc Mid Cap 05). Next: open reduce fund lines and decide whether this challenges a held long.",
+      "citations": [
+        {
+          "stockKey": "NAME:supreme industries",
+          "fields": {
+            "fundCount": 8,
+            "addCount": 0,
+            "reduceCount": 1,
+            "persistence.status": "still_reducing",
+            "priorFundCount": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_07",
+      "section": "debate",
+      "headline": "Debate: Gujarat Gas Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:gujarat gas"
+      ],
+      "body": "Gujarat Gas Limited shows fund disagreement (reversed vs prior, funds 3\u21927; funds include Icici Pru Smallcap Fund G 05, Franklin India Small Cap Fund G 05). Next: open add and reduce fund cards and note which AMCs disagree.",
+      "citations": [
+        {
+          "stockKey": "NAME:gujarat gas",
+          "fields": {
+            "fundCount": 7,
+            "addCount": 5,
+            "reduceCount": 0,
+            "persistence.status": "reversed",
+            "priorFundCount": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "ins_08",
+      "section": "debate",
+      "headline": "Debate: Eternal Limited",
+      "action": "caution",
+      "stockKeys": [
+        "NAME:eternal"
+      ],
+      "body": "Eternal Limited shows fund disagreement (addCount=9, reduceCount=1, fundCount=31; funds include Motilal Oswal Small Cap 05, Parag Parikh Flexi Cap 05). Next: open add and reduce fund cards and note which AMCs disagree.",
+      "citations": [
+        {
+          "stockKey": "NAME:eternal",
+          "fields": {
+            "fundCount": 31,
+            "addCount": 9,
+            "reduceCount": 1
+          }
+        }
+      ]
+    }
+  ]
+}

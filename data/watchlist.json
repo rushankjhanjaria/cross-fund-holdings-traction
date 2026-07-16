@@ -1,0 +1,243 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "stockKey": "NAME:acme solar holdings",
+      "name": "ACME SOLAR HOLDINGS LTD.",
+      "nse": "ACMESOLAR",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:acutaas chemicals",
+      "name": "Acutaas Chemicals Limited",
+      "nse": "ACUTAAS",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:bajaj finance",
+      "name": "Bajaj Finance Limited",
+      "nse": "BAJFINANCE",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:billionbrains garage ventures",
+      "name": "Billionbrains Garage Ventures Limited (Groww)",
+      "nse": "GROWW",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:cartrade tech",
+      "name": "CarTrade Tech Ltd.",
+      "nse": "CARTRADE",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:coromandel international",
+      "name": "Coromandel International Limited",
+      "nse": "COROMANDEL",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:craftsman automation",
+      "name": "Craftsman Automation Limited",
+      "nse": "CRAFTSMAN",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:e2e networks",
+      "name": "E2E Networks Limited",
+      "nse": "E2E",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:glaxosmithkline pharmaceuticals",
+      "name": "GlaxoSmithKline Pharmaceuticals Limited",
+      "nse": "GLAXO",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:gokaldas exports",
+      "name": "Gokaldas Exports Limited",
+      "nse": "GOKEX",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:happy forgings",
+      "name": "Happy Forgings Limited",
+      "nse": "HAPPYFORGE",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:hdfc bank",
+      "name": "HDFC Bank Limited",
+      "nse": "HDFCBANK",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:hfcl",
+      "name": "HFCL Limited",
+      "nse": "HFCL",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:hindustan aeronautics",
+      "name": "Hindustan Aeronautics Limited",
+      "nse": "HAL",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:honasa consumer",
+      "name": "Honasa Consumer Limited",
+      "nse": "HONASA",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:hyundai motor",
+      "name": "Hyundai Motor India Ltd.",
+      "nse": "HYUNDAI",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:icici bank",
+      "name": "ICICI Bank Limited",
+      "nse": "ICICIBANK",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:indegene",
+      "name": "Indegene Ltd.",
+      "nse": "INDGN",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:jsw infrastructure",
+      "name": "JSW Infrastructure Limited",
+      "nse": "JSWINFRA",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:jupiter life line hospitals",
+      "name": "Jupiter Life Line Hospitals Ltd",
+      "nse": "JLHL",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:kpr mill",
+      "name": "K.P.R. Mill Limited",
+      "nse": "KPRMILL",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:lenskart solutions",
+      "name": "Lenskart Solutions Limited",
+      "nse": "LENSKART",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:max healthcare institute",
+      "name": "Max Healthcare Institute Limited",
+      "nse": "MAXHEALTH",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:meesho",
+      "name": "Meesho Ltd.",
+      "nse": "MEESHO",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:nrb bearings",
+      "name": "NRB Bearings Ltd.",
+      "nse": "NRBBEARING",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:pine labs",
+      "name": "Pine Labs Limited",
+      "nse": "PINELABS",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:saregama",
+      "name": "Saregama India Limited",
+      "nse": "SAREGAMA",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:schneider electric infrastructure",
+      "name": "Schneider Electric Infrastructure Limited",
+      "nse": "SCHNEIDER",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:shriram finance",
+      "name": "Shriram Finance Limited",
+      "nse": "SHRIRAMFIN",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:state bank of",
+      "name": "STATE BANK OF INDIA.",
+      "nse": "SBIN",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:talwandi sabo power",
+      "name": "Talwandi Sabo Power Limited",
+      "nse": "",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:tata motors passenger vehicles",
+      "name": "Tata Motors Passenger Vehicles Limited",
+      "nse": "TMPV",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:federal bank",
+      "name": "The Federal Bank Limited",
+      "nse": "FEDERALBNK",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    },
+    {
+      "stockKey": "NAME:vedanta aluminium metal",
+      "name": "Vedanta Aluminium Metal Limited",
+      "nse": "VAML",
+      "pinnedAt": "2026-06",
+      "source": "auto"
+    }
+  ]
+}
