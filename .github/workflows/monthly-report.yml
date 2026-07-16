@@ -1,8 +1,9 @@
 # Build traction reports from RupeeVest and publish HTML to GitHub Pages.
 #
-# Setup (once):
-#   Repo Settings → Pages → Build and deployment → Source: GitHub Actions
-# Public repos: Pages is free. Private repos need GitHub Pro/Team for Pages.
+# Setup (once) — use the gh-pages branch (reliable):
+#   Repo Settings → Pages → Build and deployment
+#     Source: Deploy from a branch
+#     Branch: gh-pages / (root)
 #
 # Manual run: Actions → "Monthly traction report" → Run workflow
 #   Toggle "Deploy HTML to GitHub Pages" (on by default). Scheduled runs always deploy.
@@ -29,12 +30,12 @@ on:
         type: boolean
         default: true
       deploy_pages:
-        description: "Deploy HTML to GitHub Pages"
+        description: "Deploy HTML to GitHub Pages (gh-pages branch)"
         type: boolean
         default: true
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -43,7 +44,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -88,7 +89,6 @@ jobs:
             --out-dir "funds/${{ steps.month.outputs.slug }}"
             --delay 1.0
           )
-          # schedule has no inputs → default to overwrite so each monthly run is fresh
           if [ "${{ github.event_name }}" = "schedule" ] || [ "${OVERWRITE}" = "true" ]; then
             ARGS+=(--overwrite)
           fi
@@ -111,10 +111,6 @@ jobs:
           fi
           python3 -m mf_screener.month_run "${ARGS[@]}"
 
-      - name: Setup Pages
-        if: github.event_name == 'schedule' || inputs.deploy_pages == true
-        uses: actions/configure-pages@v5
-
       - name: Prepare Pages site
         run: |
           mkdir -p _site
@@ -122,7 +118,6 @@ jobs:
             cp -R output/html/. _site/
             cp output/html/traction.html _site/index.html
           else
-            # Combined report missing (e.g. insights failed) — still publish month HTML
             shopt -s nullglob
             months=(output/html/*_traction.html)
             if [ ${#months[@]} -eq 0 ]; then
@@ -131,7 +126,6 @@ jobs:
               exit 1
             fi
             cp "${months[@]}" _site/
-            # Prefer newest-looking slug alphabetically last as index; override with traction if present
             cp "${months[-1]}" _site/index.html
             echo "WARN: output/html/traction.html missing; using ${months[-1]} as index.html" >&2
           fi
@@ -141,12 +135,6 @@ jobs:
           ls -la _site
           echo "index.html bytes: $(wc -c < _site/index.html)"
 
-      - name: Upload Pages artifact
-        if: github.event_name == 'schedule' || inputs.deploy_pages == true
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
       - name: Upload report bundle (optional download)
         uses: actions/upload-artifact@v4
         with:
@@ -155,17 +143,16 @@ jobs:
             output/html
             output/json
             output/csv
+            _site
           if-no-files-found: warn
           retention-days: 30
 
-  deploy:
-    if: github.event_name == 'schedule' || inputs.deploy_pages == true
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to gh-pages branch
+        if: github.event_name == 'schedule' || inputs.deploy_pages == true
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: true
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com

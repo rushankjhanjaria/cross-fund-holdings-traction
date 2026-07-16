@@ -109,11 +109,14 @@ Entry points: `mf-screener` (screen) and `mf-screener-month` (full month pipelin
 
 Workflow: [`.github/workflows/monthly-report.yml`](.github/workflows/monthly-report.yml)
 
-Automates **RupeeVest ingest → `month_run` → HTML**. Fund CSVs and reports stay off git; the run uploads Actions artifacts and can publish the site.
+Automates **RupeeVest ingest → `month_run` → HTML**, then publishes `_site/` (with `index.html` = `traction.html`) to the **`gh-pages`** branch.
 
 ### One-time setup
 
-1. **Pages:** Repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+1. **Pages:** Repo **Settings → Pages → Build and deployment**
+   - **Source:** Deploy from a branch  
+   - **Branch:** `gh-pages` / `(root)`  
+   - Do **not** use `/docs` on `main` (that folder is for markdown notes only and has no `index.html`).
 2. **Visibility:** Pages is free for **public** repos. Private repos need GitHub Pro/Team (or make the repo public).
 3. **Optional Gemini:** **Settings → Secrets and variables → Actions** → add `GEMINI_API_KEY`. Omit for rules-only insights.
 
@@ -128,13 +131,20 @@ Automates **RupeeVest ingest → `month_run` → HTML**. Fund CSVs and reports s
 | `month` | *(previous UTC month)* | Folder slug, e.g. `june`. Empty → prior month (disclosure lag). |
 | `overwrite_funds` | on | Re-download CSVs from RupeeVest |
 | `refresh_prices` | on | Refresh yfinance prices |
-| **Deploy HTML to GitHub Pages** | **on** | Publish `output/html/` to Pages |
+| **Deploy HTML to GitHub Pages** | **on** | Push built HTML to `gh-pages` |
 
-4. Leave **Deploy HTML to GitHub Pages** checked to update the live site. Uncheck to build only (download the `traction-reports-*` artifact from the run). For a known month, set **month** explicitly (e.g. `june`) so the folder/slug match your CSVs.
+4. Leave deploy checked. For a known month, set **month** explicitly (e.g. `june`).
 
 **Schedule:** `03:00 UTC` on the **5th** of each month (always deploys). Cron only runs from the default branch (`main`).
 
-**Site URL:** `https://<user>.github.io/<repo>/` (`traction.html` is also served as `index.html`).
+**Site URL:** `https://rushankjhanjaria.github.io/cross-fund-holdings-traction/` (`index.html` = combined `traction.html`).
+
+### If you see “File not found” / no index.html
+
+1. Confirm Pages branch is **`gh-pages` / (root)** — not `main` `/docs`.
+2. Open the latest **Monthly traction report** run and confirm the **Deploy to gh-pages branch** step is green.
+3. In the repo, open the **`gh-pages`** branch and check that `index.html` exists at the root.
+4. Hard-refresh the site URL (CDN can lag 1–2 minutes).
 
 ---
 
