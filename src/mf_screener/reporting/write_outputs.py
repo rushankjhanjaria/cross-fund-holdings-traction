@@ -11,6 +11,7 @@ from mf_screener.pipeline import RunResult
 from mf_screener.report_csv import write_csv_report
 from mf_screener.report_html import HtmlReportMeta, refresh_combined_html_report, write_html_report
 from mf_screener.reporting.json_report import build_report
+from mf_screener.reporting.layout import ReportsLayout
 from mf_screener.reporting.symbol_context import NameMapContext
 
 
@@ -27,12 +28,22 @@ def write_traction_reports(
     combined_html: Path | None = None,
     refresh_combined: bool = True,
 ) -> dict[str, Path]:
-    """Write sibling JSON/CSV/HTML and optionally refresh multi-month traction.html."""
+    """Write JSON/CSV/HTML into the structured reports layout and optionally refresh combined HTML."""
     name_map = name_map or NameMapContext.load()
     stocks: list[StockAggregate] = result.stocks
     entry_by_key = result.entry_by_key or None
 
-    out_json.parent.mkdir(parents=True, exist_ok=True)
+    layout = ReportsLayout.from_any_path(out_json)
+    layout.ensure()
+    slug = ReportsLayout.slug_from_traction_json(out_json)
+    paths = layout.for_slug(slug)
+
+    json_out = paths.traction_json
+    csv_out = csv_path or paths.traction_csv
+    html_out = html_path or paths.traction_html
+    combined = combined_html or paths.combined_html
+
+    json_out.parent.mkdir(parents=True, exist_ok=True)
     report = build_report(
         stocks,
         folder=folder,
@@ -42,14 +53,12 @@ def write_traction_reports(
         price_month=result.price_month,
         entry_by_stock_key=entry_by_key,
     )
-    out_json.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print(f"Wrote JSON report to {out_json}", file=sys.stderr)
+    json_out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(f"Wrote JSON report to {json_out}", file=sys.stderr)
 
-    csv_out = csv_path or out_json.with_suffix(".csv")
     write_csv_report(stocks, csv_out, entry_by_stock_key=entry_by_key, name_map=name_map)
     print(f"Wrote CSV report to {csv_out}", file=sys.stderr)
 
-    html_out = html_path or out_json.with_suffix(".html")
     write_html_report(
         stocks,
         html_out,
@@ -64,21 +73,21 @@ def write_traction_reports(
     )
     print(f"Wrote HTML report to {html_out}", file=sys.stderr)
 
-    paths: dict[str, Path] = {
-        "json": out_json,
+    written: dict[str, Path] = {
+        "json": json_out,
         "csv": csv_out,
         "html": html_out,
+        "root": layout.root,
     }
 
     if refresh_combined:
-        combined = combined_html or (out_json.parent / "traction.html")
         if refresh_combined_html_report(
-            out_json.parent,
+            layout.root,
             combined,
             prefer_month_id=result.price_month,
             name_map=name_map,
         ):
             print(f"Wrote combined HTML report to {combined}", file=sys.stderr)
-            paths["combined"] = combined
+            written["combined"] = combined
 
-    return paths
+    return written

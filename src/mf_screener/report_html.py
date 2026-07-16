@@ -175,12 +175,15 @@ def load_month_bundles_from_output_dir(
     *,
     name_map: NameMapContext | None = None,
 ) -> list[dict[str, Any]]:
-    """Load one month bundle per output/*_traction.json; CSV fallback only if JSON fails."""
+    """Load one month bundle per reports json/*_traction.json; CSV fallback only if JSON fails."""
+    from mf_screener.reporting.layout import ReportsLayout
+
+    layout = ReportsLayout.from_any_path(output_dir)
     bundles: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
     ctx = name_map or NameMapContext.load()
 
-    for json_path in sorted(output_dir.glob("*_traction.json")):
+    for json_path in layout.iter_traction_json():
         try:
             report = json.loads(json_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
@@ -196,7 +199,10 @@ def load_month_bundles_from_output_dir(
         if report.get("stocks"):
             payload = build_payload_from_json_report(report, name_map=ctx)
         else:
-            csv_path = json_path.with_suffix(".csv")
+            csv_name = json_path.name.replace(".json", ".csv")
+            csv_path = layout.csv_dir / csv_name
+            if not csv_path.is_file():
+                csv_path = json_path.with_suffix(".csv")
             if not csv_path.is_file():
                 continue
             with csv_path.open(newline="", encoding="utf-8") as f:
@@ -226,14 +232,13 @@ def load_month_bundles_from_output_dir(
     return bundles
 
 
-def _month_id_from_insights_path(output_dir: Path, path: Path, data: Any) -> str:
+def _month_id_from_insights_path(layout: "ReportsLayout", path: Path, data: Any) -> str:
     if isinstance(data, dict):
         month_id = str(data.get("monthId") or data.get("price_month") or "").strip()
         if month_id:
             return month_id
-    stem = path.name.replace("_insights.json", "")
-    traction = output_dir / f"{stem}_traction.json"
-    if traction.is_file():
+    traction = layout.resolve_traction_json_for_insights(path)
+    if traction is not None and traction.is_file():
         try:
             report = json.loads(traction.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
@@ -246,13 +251,16 @@ def _month_id_from_insights_path(output_dir: Path, path: Path, data: Any) -> str
 
 def _load_insights_docs(output_dir: Path) -> dict[str, dict[str, Any]]:
     """Read every *_insights.json once; key full docs by monthId."""
+    from mf_screener.reporting.layout import ReportsLayout
+
+    layout = ReportsLayout.from_any_path(output_dir)
     by_month: dict[str, dict[str, Any]] = {}
-    for path in sorted(output_dir.glob("*_insights.json")):
+    for path in layout.iter_insights_json():
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             continue
-        month_id = _month_id_from_insights_path(output_dir, path, data)
+        month_id = _month_id_from_insights_path(layout, path, data)
         if not month_id:
             continue
         if isinstance(data, dict):
@@ -282,23 +290,26 @@ def refresh_combined_html_report(
     name_map: NameMapContext | None = None,
     auto_watchlist: bool = True,
 ) -> bool:
-    """Rebuild multi-month HTML from all *_traction.json in output_dir."""
-    bundles = load_month_bundles_from_output_dir(output_dir, name_map=name_map)
+    """Rebuild multi-month HTML from all *_traction.json under the reports root."""
+    from mf_screener.reporting.layout import ReportsLayout
+
+    layout = ReportsLayout.from_any_path(output_dir)
+    bundles = load_month_bundles_from_output_dir(layout.root, name_map=name_map)
     if not bundles:
         return False
     default = prefer_month_id
     if default and not any(b["id"] == default for b in bundles):
         default = None
     newest = bundles[0]
-    watchlist = load_watchlist(output_dir)
+    watchlist = load_watchlist(layout.root)
     if auto_watchlist:
         watchlist = merge_auto_watchlist(
             watchlist,
             stocks=list(newest.get("stocks") or []),
             month_id=str(newest.get("id") or ""),
         )
-        save_watchlist(output_dir, watchlist)
-    docs = _load_insights_docs(output_dir)
+        save_watchlist(layout.root, watchlist)
+    docs = _load_insights_docs(layout.root)
     insights_by_month = {mid: list(doc.get("insights") or []) for mid, doc in docs.items()}
     top_traction_by_month = {
         mid: list(doc.get("topTraction") or []) for mid, doc in docs.items()

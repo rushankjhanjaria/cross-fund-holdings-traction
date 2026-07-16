@@ -80,7 +80,10 @@ def run_insights(
     reports_dir: Path | None = None,
     use_gemini: bool = True,
 ) -> dict:
-    reports_dir = reports_dir or report_path.parent
+    from mf_screener.reporting.layout import ReportsLayout
+
+    layout = ReportsLayout.from_any_path(reports_dir or report_path)
+    reports_dir = layout.root
     month_id, stocks = _stocks_for_report(report_path, reports_dir)
     wl = load_watchlist(reports_dir)
     pack = build_evidence_pack(
@@ -108,11 +111,11 @@ def run_insights(
         "topTraction": list(pack.get("topTraction") or []),
         "insights": verified,
     }
-    out = out_path or report_path.with_name(
-        report_path.name.replace("_traction.json", "_insights.json")
-        if report_path.name.endswith("_traction.json")
-        else report_path.stem + "_insights.json"
-    )
+    if out_path is None:
+        slug = ReportsLayout.slug_from_traction_json(report_path)
+        out = layout.for_slug(slug).insights_json
+    else:
+        out = out_path
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     doc["_out"] = str(out)

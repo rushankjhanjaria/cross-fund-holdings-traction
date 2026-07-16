@@ -7,11 +7,13 @@ load.py              → HoldingRow[] per fund CSV
 metrics.py           → FundStockMetrics (share %, weight delta, activity)
 aggregate.py         → StockAggregate[] (scores, direction, fund contributions)
 pipeline.py          → run(): filter + optional price enrichment
-reporting/write_outputs.py → JSON / CSV / HTML (+ optional combined refresh)
+reporting/write_outputs.py → JSON / CSV / HTML via reporting/layout.py (+ optional combined refresh)
 month_run.py         → one-shot: pipeline → reports → insights → combined HTML
 insights/            → evidence → rules → optional Gemini → verify + topTraction
 cli.py               → argparse entry for screening only
 ```
+
+Reports root layout (`output/` or `~/mf-data/reports`): `json/`, `csv/`, `html/`, `backtests/`, `cache/`, plus `watchlist.json`. Source fund CSVs stay in `funds/{month}/`.
 
 Recommended month workflow: `python -m mf_screener.month_run --folder funds/june`.
 
@@ -44,8 +46,8 @@ Entry point: `python -m mf_screener` → [`cli.main`](src/mf_screener/cli.py) �
 ## HTML report
 
 - Templates: [`src/mf_screener/templates/`](src/mf_screener/templates/).
-- Combined `traction.html` embeds months, watchlist, `insightsByMonth`, `topTractionByMonth`.
-- Optional rebuild: `scripts/embed_report_ui.py` (also done by `month_run` / CLI `--out`).
+- Combined `html/traction.html` embeds months, watchlist, `insightsByMonth`, `topTractionByMonth`.
+- Optional rebuild: `scripts/embed_report_ui.py` (also done by `month_run` / CLI `--out`; migrates legacy flat files if present).
 
 ## Tests
 

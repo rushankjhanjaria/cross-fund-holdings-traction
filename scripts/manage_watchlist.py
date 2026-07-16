@@ -24,7 +24,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--reports-dir",
         type=Path,
         required=True,
-        help="Directory containing *_traction.json and watchlist.json",
+        help="Reports root (contains json/, watchlist.json)",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 

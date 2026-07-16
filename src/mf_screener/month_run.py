@@ -13,6 +13,7 @@ from pathlib import Path
 from mf_screener.insights.__main__ import run_insights
 from mf_screener.pipeline import run
 from mf_screener.report_html import refresh_combined_html_report
+from mf_screener.reporting.layout import ReportsLayout
 from mf_screener.reporting.symbol_context import NameMapContext
 from mf_screener.reporting.terminal import print_tree
 from mf_screener.reporting.write_outputs import write_traction_reports
@@ -35,13 +36,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--out-dir",
         type=Path,
         default=None,
-        help="Reports directory (default: <repo>/output)",
+        help="Reports root (default: <repo>/output); writes into json/, csv/, html/",
     )
     p.add_argument(
         "--slug",
         type=str,
         default=None,
-        help="Output basename prefix (default: folder name → june_traction.json)",
+        help="Output basename prefix (default: folder name → june)",
     )
     p.add_argument("--top", type=int, default=30)
     p.add_argument(
@@ -55,13 +56,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--no-gemini", action="store_true", help="Rules-only insights")
     p.add_argument("--no-insights", action="store_true", help="Skip insights")
     return p.parse_args(argv)
-
-
-def _default_out_dir() -> Path:
-    repo = Path(__file__).resolve().parents[2]
-    out = repo / "output"
-    out.mkdir(parents=True, exist_ok=True)
-    return out
 
 
 def run_month(
@@ -78,11 +72,10 @@ def run_month(
     top: int = 30,
 ) -> dict:
     folder = folder.resolve()
-    out_dir = (out_dir or _default_out_dir()).resolve()
-    out_dir.mkdir(parents=True, exist_ok=True)
+    layout = ReportsLayout(root=(out_dir or ReportsLayout.default().root).resolve())
+    layout.ensure()
     slug = (slug or folder.name).strip().lower().replace(" ", "_")
-    out_json = out_dir / f"{slug}_traction.json"
-    combined = out_dir / "traction.html"
+    paths = layout.for_slug(slug)
 
     result = run(
         folder,
@@ -97,22 +90,26 @@ def run_month(
 
     # Write month artifacts once; refresh combined HTML after insights so MoM
     # persistence + insights embed in a single rebuild.
-    write_traction_reports(
+    written = write_traction_reports(
         result,
         folder=folder,
-        out_json=out_json,
+        out_json=paths.traction_json,
         rank=rank,
         include_holds=include_holds,
         name_map=name_map,
-        combined_html=combined,
+        csv_path=paths.traction_csv,
+        html_path=paths.traction_html,
+        combined_html=paths.combined_html,
         refresh_combined=False,
     )
+    out_json = written["json"]
 
     insights_doc = None
     if make_insights:
         insights_doc = run_insights(
             out_json,
-            reports_dir=out_dir,
+            out_path=paths.insights_json,
+            reports_dir=layout.root,
             use_gemini=use_gemini,
         )
         print(
@@ -124,17 +121,18 @@ def run_month(
         )
 
     if refresh_combined_html_report(
-        out_dir,
-        combined,
+        layout.root,
+        paths.combined_html,
         prefer_month_id=result.price_month,
         name_map=name_map,
     ):
-        print(f"Wrote combined HTML report to {combined}", file=sys.stderr)
+        print(f"Wrote combined HTML report to {paths.combined_html}", file=sys.stderr)
 
     return {
         "folder": str(folder),
         "out_json": str(out_json),
-        "combined_html": str(combined),
+        "combined_html": str(paths.combined_html),
+        "reports_root": str(layout.root),
         "price_month": result.price_month,
         "stock_count": len(result.stocks),
         "insights": insights_doc,
